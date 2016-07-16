@@ -1,0 +1,12 @@
+Week 2
+
+Monday    - Create a console application that will read in 2 integer values and an operation (add or subtract), perform the correct operation and display the results.
+	      - What happens when we go out of the bounds of the integer data type? Research ways to stop that or handle it.
+Tuesday   - Add multiplication as an operation to the calculator application. 
+          - Notice that it becomes much easier to go out of bounds of the integer data type.
+		  - Change the calculator program to accept floating point numbers and display floating point numbers.
+Wednesday - Add division to the calculator application. 
+		  - What happens when we divide by zero?
+Thursday  - Mortgage Calculator - Calculate the monthly payments of a fixed term mortgage over given Nth terms at a given interest rate. Also figure out how long it will take the user to pay back the loan. For added complexity, add an option for users to select the compounding interval (Monthly, Weekly, Daily, Continually).
+Friday	  - Change the calculator program to execute each operation in its own method.
+		  - Begin to add exception handling to the calculator application.
