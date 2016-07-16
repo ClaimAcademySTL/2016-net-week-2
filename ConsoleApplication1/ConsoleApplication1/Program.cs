@@ -15,7 +15,7 @@ namespace ConsoleApplication1
             String aStr = Console.ReadLine();
             bool isAValid = Int32.TryParse(aStr, out a);
             //int a = Int32.Parse(Console.ReadLine());
-            Console.Write("Operator: ");
+            Console.Write("Operator (Allowed: +, -): ");
             String oper = Console.ReadLine();
             Console.Write("Integer 2: ");
             int b;
