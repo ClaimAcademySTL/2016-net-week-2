@@ -10,6 +10,8 @@ namespace ConsoleApplication1
     {
         static void Main(string[] args)
         {
+            // Get a left-hand integer, an operator, and a right-hand
+            // integer from the user.
             Console.Write("Integer 1: ");
             int a;
             String aStr = Console.ReadLine();
@@ -23,23 +25,29 @@ namespace ConsoleApplication1
             bool isBValid = Int32.TryParse(bStr, out b);
             //int b = Int32.Parse(Console.ReadLine());
 
+            // Check whether the user entered valid integers.
             Console.WriteLine();
             bool success;
             int result = 0;
             if (isAValid && isBValid)
             {
+                // If the user entered valid integers, look at the operator.
                 switch (oper)
                 {
+                    // User wants to add
                     case "+":
                         result = a + b;
                         success = true;
                         break;
 
+                    // User wants to subtract
                     case "-":
                         result = a - b;
                         success = true;
                         break;
 
+                    // User entered some strange thing we don't understand.
+                    // Give an informative error message.
                     default:
                         Console.WriteLine("'{0}' is not a valid operator!", oper);
                         success = false;
@@ -48,6 +56,7 @@ namespace ConsoleApplication1
             }
             else
             {
+                // One of the integers was invalid. Which one?
                 String invalidValue;
                 String invalidSide;
                 if (!isAValid)
@@ -61,19 +70,24 @@ namespace ConsoleApplication1
                     invalidValue = bStr;
                     invalidSide = "Right";
                 }
+
+                // Give an informative error message.
                 Console.WriteLine("{0}-side value of '{1}' is not a valid integer!", invalidSide, invalidValue);
                 success = false;
             }
 
+            // If everything was good, show the result.
             if (success)
             {
                 Console.WriteLine("{0} {1} {2} = {3}", a, oper, b, result);
             }
             else
             {
+                // Something went wrong. Let the user know.
                 Console.WriteLine("Cannot calculate result");
             }
 
+            // Keep the program open so the user can read the result.
             Console.WriteLine("\n\nPress any key to continue...");
             Console.ReadKey();
         }
