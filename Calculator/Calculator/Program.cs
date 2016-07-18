@@ -10,51 +10,78 @@ namespace Calculator
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Please enter an integer value");
-            string firstInt = Console.ReadLine();
-            Console.WriteLine("Please enter another integer value");
-            string secondInt = Console.ReadLine();
-            int fInt = 0;
-            int sInt=0;
-            bool f = int.TryParse(firstInt, out fInt);
-            bool s = int.TryParse(secondInt, out sInt);
-            while (!f || !s){
+            bool run, f, s, checkOp;
+            string firstInt, secondInt, opChar, checkRun;
+            int fInt, sInt;
 
-                if (!f)
+            run = true;
+
+            while (run)
+            {
+                Console.WriteLine("Please enter an integer value");
+                firstInt = Console.ReadLine();
+                f = int.TryParse(firstInt, out fInt);
+                while (!f)
                 {
-                    Console.WriteLine("Invalid entry for first integer, please enter valid integer.");
+                    Console.WriteLine("Invalid entry, please enter valid integer.");
                     firstInt = Console.ReadLine();
                     f = int.TryParse(firstInt, out fInt);
                 }
-                if (!s)
+                Console.WriteLine("Please enter another integer value");
+                secondInt = Console.ReadLine();
+                s = int.TryParse(secondInt, out sInt);
+                while (!s)
                 {
-                    Console.WriteLine("Invalid entry for second integer, please enter valid integer.");
+                    Console.WriteLine("Invalid entry, please enter valid integer.");
                     secondInt = Console.ReadLine();
                     s = int.TryParse(secondInt, out sInt);
                 }
-            }
 
-            Console.WriteLine("Please enter the operation symbol you would like to use on the two integers(+ or -).");
-            string opChar = Console.ReadLine();
-            while(opChar != "+")
-            {
-                if(opChar == "-")
-                {
-                    break;
-                }
-                Console.WriteLine("Invalid entry, please enter either + or -");
+                Console.WriteLine("Please enter the operation symbol you would like to use on the two integers(+, -, /, or *).");
                 opChar = Console.ReadLine();
-            }
+                checkOp = false;
+                while (!checkOp)
+                {
+                    switch (opChar)
+                    {
+                        case "+":
+                            Console.WriteLine("{0} + {1} = {2}", fInt, sInt, fInt + sInt);
+                            checkOp = true;
+                            break;
+                        case "-":
+                            Console.WriteLine("{0} - {1} = {2}", fInt, sInt, fInt - sInt);
+                            checkOp = true;
+                            break;
+                        case "/":
+                            Console.WriteLine("{0} / {1} = {2}", fInt, sInt, fInt / sInt);
+                            checkOp = true;
+                            break;
+                        case "*":
+                            Console.WriteLine("{0} * {1} = {2}", fInt, sInt, fInt * sInt);
+                            checkOp = true;
+                            break;
+                        default:
+                            Console.WriteLine("Invalid entry, please enter valid operator.");
+                            break;
+                    }
+                }
 
-            if(opChar == "+")
-            {
-                Console.WriteLine("{0} + {1} = {2}", fInt, sInt, fInt + sInt);
+                Console.WriteLine("Would you like to run again? (yes or no)");
+                checkRun = Console.ReadLine().ToLower();
+                while(checkRun != "yes" && checkRun != "no")
+                {
+                    Console.WriteLine("Invalid entry, please enter yes or no.");
+                    checkRun = Console.ReadLine().ToLower();
+                }
+                if(checkRun == "no")
+                {
+                    run = false;
+                    Console.WriteLine("Press any key to exit.");
+                    Console.ReadKey();
+                }
+                Console.WriteLine();
+                Console.WriteLine();
             }
-            else if(opChar == "-")
-            {
-                Console.WriteLine("{0} - {1} = {2}", fInt, sInt, fInt - sInt);
-            }
-            Console.ReadKey();
         }
     }
 }
