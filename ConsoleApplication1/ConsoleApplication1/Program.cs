@@ -27,53 +27,10 @@ namespace ConsoleApplication1
                 }
             } while (!isValid);
 
-            int result = 0;
+            // Do the operation
             String resultError;
-            switch (oper)
-            {
-                // User wants to add
-                case "+":
-                    {
-                        result = Add(a, b, out resultError);
-                        break;
-                    }
-
-                // User wants to subtract
-                case "-":
-                    {
-                        result = Subtract(a, b, out resultError);
-                        break;
-                    }
-
-                case "*":
-                    {
-                        result = Multiply(a, b, out resultError);
-                        break;
-                    }
-
-                case "/":
-                    {
-                        result = Divide(a, b, out resultError);
-                        break;
-                    }
-
-                case "%":
-                    {
-                        result = GetRemainder(a, b, out resultError);
-                        break;
-                    }
-
-                
-                default:
-                    {
-                        // We should never get here unless allowedOperators is wrong.
-                        resultError = String.Format("'{0}' is not a valid operator!", oper);
-                        break;
-                    }
-            }
+            int result = DoOperation(a, b, oper, out resultError);
             
-            
-
             // If everything was good, show the result.
             if (resultError.Equals(""))
             {
@@ -88,6 +45,35 @@ namespace ConsoleApplication1
             // Keep the program open so the user can read the result.
             Console.WriteLine("\n\nPress any key to continue...");
             Console.ReadKey();
+        }
+
+        private static int DoOperation(int left, int right, String oper, out String errorMsg)
+        {
+            switch (oper)
+            {
+                // User wants to add
+                case "+":
+                    return Add(left, right, out errorMsg);
+
+                // User wants to subtract
+                case "-":
+                    return Subtract(left, right, out errorMsg);
+
+                case "*":
+                    return Multiply(left, right, out errorMsg);
+
+                case "/":
+                    return Divide(left, right, out errorMsg);
+
+                case "%":
+                    return GetRemainder(left, right, out errorMsg);
+
+                default:
+                    // We should never get here unless allowedOperators is wrong.
+                    errorMsg = String.Format("'{0}' is not a valid operator!", oper);
+                    return 0;
+
+            }
         }
 
         public static int Add(int a, int b, out String errorMsg)
