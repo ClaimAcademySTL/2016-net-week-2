@@ -12,7 +12,7 @@ namespace ConsoleApplication1
         {
             String[] allowedOperators = { "+", "-", "*", "/", "%" };
             bool isValid;
-            int a, b;
+            double a, b;
             String oper;
 
             // Keep getting user input until we get something valid.
@@ -29,7 +29,7 @@ namespace ConsoleApplication1
 
             // Do the operation
             String resultError;
-            int result = DoOperation(a, b, oper, out resultError);
+            double result = DoOperation(a, b, oper, out resultError);
             
             // If everything was good, show the result.
             if (resultError.Equals(""))
@@ -47,7 +47,7 @@ namespace ConsoleApplication1
             Console.ReadKey();
         }
 
-        private static int DoOperation(int left, int right, String oper, out String errorMsg)
+        private static double DoOperation(double left, double right, String oper, out String errorMsg)
         {
             switch (oper)
             {
@@ -76,7 +76,7 @@ namespace ConsoleApplication1
             }
         }
 
-        public static int Add(int a, int b, out String errorMsg)
+        public static double Add(double a, double b, out String errorMsg)
         {
             errorMsg = "";
 
@@ -91,7 +91,7 @@ namespace ConsoleApplication1
             }
         }
 
-        public static int Subtract(int a, int b, out String errorMsg)
+        public static double Subtract(double a, double b, out String errorMsg)
         {
             errorMsg = "";
             if (IsSubtractionValid(a, b))
@@ -105,7 +105,7 @@ namespace ConsoleApplication1
             }
         }
 
-        public static int Multiply(int a, int b, out String errorMsg)
+        public static double Multiply(double a, double b, out String errorMsg)
         {
             errorMsg = "";
             if (IsMultiplicationValid(a, b))
@@ -120,7 +120,7 @@ namespace ConsoleApplication1
 
         }
 
-        public static int Divide(int a, int b, out String errorMsg)
+        public static double Divide(double a, double b, out String errorMsg)
         {
             errorMsg = "";
             if (IsDivisionValid(a, b))
@@ -129,13 +129,13 @@ namespace ConsoleApplication1
             }
             else
             {
-                errorMsg = "Attempted to divide by zero!";
+                errorMsg = "Result would overflow!";
                 return 0;
             }
 
         }
 
-        public static int GetRemainder(int a, int b, out String errorMsg)
+        public static double GetRemainder(double a, double b, out String errorMsg)
         {
             errorMsg = "";
             if (IsModulusValid(a, b))
@@ -155,7 +155,7 @@ namespace ConsoleApplication1
          * errorMsg parameter will be an empty string upon success, 
          * or non-empty string upon failure).
          */
-        private static bool ParseInput(string inp, String[] allowedOperators, out int left, out String oper, out int right, out String errorMsg)
+        private static bool ParseInput(string inp, String[] allowedOperators, out double left, out String oper, out double right, out String errorMsg)
         {
             left = 0;
             oper = "";
@@ -172,14 +172,14 @@ namespace ConsoleApplication1
             else
             {
 
-                if (!int.TryParse(tokens[0], out left))
+                if (!double.TryParse(tokens[0], out left))
                 {
-                    errorMsg += String.Format("Left-side value '{0}' is not a valid integer!\n", tokens[0]);
+                    errorMsg += String.Format("Left-side value '{0}' is not a valid number!\n", tokens[0]);
                     result = false;
                 }
-                if (!int.TryParse(tokens[2], out right))
+                if (!double.TryParse(tokens[2], out right))
                 {
-                    errorMsg += String.Format("Right-side value '{0}' is not a valid integer!\n", tokens[2]);
+                    errorMsg += String.Format("Right-side value '{0}' is not a valid number!\n", tokens[2]);
                     result = false;
                 }
 
@@ -238,7 +238,7 @@ namespace ConsoleApplication1
 
         private static string GetUserInput(String[] operators)
         {
-            String prompt = "Please enter a simple expression with two integers and a binary operator.\nAllowed operators are(";
+            String prompt = "Please enter a simple expression with two numbers and a binary operator.\nAllowed operators are(";
             for (int i = 0; i < operators.Length; i++)
             {
                 prompt += String.Format("'{0}'", operators[i]);
@@ -247,45 +247,65 @@ namespace ConsoleApplication1
                     prompt += ", ";
                 }
             }
-            prompt += ").\nExample expression: '75 + -20'\n  > ";
+            prompt += ").\nExample expression: '75.3 + -20.7'\n  > ";
             Console.Write(prompt);
             return Console.ReadLine();
         }
 
-        public static bool IsDivisionValid(int a, int b)
-        {
-            return b != 0;
-        }
-
-        public static bool IsModulusValid(int a, int b)
-        {
-            return b != 0;
-        }
-
-        private static bool IsMultiplicationValid(int a, int b)
+        public static bool IsDivisionValid(double a, double b)
         {
             bool willOverflow = false;
-            // Can't overflow if either operand is 0.
+            // Can't overflow if first operand is 0, and
+            // will return infinity if second operand is 0.
+            // Can only overflow if absolute value of first
+            // operand is greater than 1 and absolute value
+            // of second operand is less than 1.
             // Can overflow past MaxValue if both signs
             // are the same, or past MinValue if both
             // operands have opposite sign.
-
-            // Not sure if this works when a or b is equal to
-            // int.MinValue.
-            if (a != 0 && b != 0)
+            if ((a < -1 || a > 1) && (b > -1 && b < 1) && b != 0)
             {
-                int signA = (a > 0) ? 1 : -1;
-                int absA = a * signA;
-                int signB = (b > 0) ? 1 : -1;
-                int absB = b * signB;
+                double absA, absB;
+                int signA = GetSign(a, out absA);
+                int signB = GetSign(b, out absB);
                 if (signA == signB)
                 {
-                    int roomForOverflow = int.MaxValue / absA;
+                    willOverflow = (absA > absB * double.MaxValue);
+                }
+                else
+                {
+                    willOverflow = (absA > -absB * double.MinValue);
+                }
+            }
+            return !willOverflow;
+        }
+
+        public static bool IsModulusValid(double a, double b)
+        {
+            return b != 0;
+        }
+
+        private static bool IsMultiplicationValid(double a, double b)
+        {
+            bool willOverflow = false;
+            // Can't overflow if absolute value of either 
+            // operand is less than 1.
+            // Can overflow past MaxValue if both signs
+            // are the same, or past MinValue if both
+            // operands have opposite sign.
+            if ((a < -1 || a > 1) && (b < -1 || b > 1))
+            {
+                double absA, absB;
+                int signA = GetSign(a, out absA);
+                int signB = GetSign(b, out absB);
+                if (signA == signB)
+                {
+                    double roomForOverflow = double.MaxValue / absA;
                     willOverflow = (absB > roomForOverflow);
                 }
                 else
                 {
-                    int roomForOverflow = (int.MinValue / absA);
+                    double roomForOverflow = (double.MinValue / absA);
                     willOverflow = (absB > -roomForOverflow);
                 }
             }
@@ -293,42 +313,61 @@ namespace ConsoleApplication1
             return !willOverflow;
         }
 
-        private static bool IsSubtractionValid(int a, int b)
+        private static bool IsSubtractionValid(double a, double b)
         {
             // We can only overflow if both a and b have opposite sign
             // (and both are non-zero).
             bool willOverflow = false;
             if (a > 0 && b < 0)
             {
-                int roomForOverflow = int.MaxValue - a; // non-negative
+                double roomForOverflow = double.MaxValue - a; // non-negative
                 willOverflow = (b < -roomForOverflow);
             }
             else if (a < 0 && b > 0)
             {
-                int roomForOverflow = int.MinValue - a; // non-positive
+                double roomForOverflow = double.MinValue - a; // non-positive
                 willOverflow = (b > -roomForOverflow);
             }
 
             return !willOverflow;
         }
 
-        private static bool IsAdditionValid(int a, int b)
+        private static bool IsAdditionValid(double a, double b)
         {
             // We can only overflow if both a and b have the same sign
             // (and both are non-zero).
             bool willOverflow = false;
             if (a > 0 && b > 0)
             {
-                int roomForOverflow = int.MaxValue - a; // non-negative
+                double roomForOverflow = double.MaxValue - a; // non-negative
                 willOverflow = (b > roomForOverflow);
             }
             else if (a < 0 && b < 0)
             {
-                int roomForOverflow = int.MinValue - a; // non-positive
+                double roomForOverflow = double.MinValue - a; // non-positive
                 willOverflow = (b < roomForOverflow);
             }
 
             return !willOverflow;
+        }
+
+        private static int GetSign(double val, out double absoluteValue)
+        {
+            int sign;
+            if (val > 0)
+            {
+                sign = 1;
+            }
+            else if (val < 0)
+            {
+                sign = -1;
+            }
+            else
+            {
+                sign = 0;
+            }
+            absoluteValue = val * sign;
+            return sign;
         }
     }
 }
