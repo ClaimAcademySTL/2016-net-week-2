@@ -8,14 +8,14 @@ namespace ConsoleApplication1.Operators
 {
     class ModulusOperator : MultiplylikeOperator
     {
-        public const String OperatorSymbol = "/";
+        public const String OperatorSymbol = "%";
         private const int _precedence = 1;
 
         public override int Precedence { get { return _precedence; } }
 
         public override string Symbol { get { return OperatorSymbol; } }
 
-        protected override bool IsOperationValid(double left, double right)
+        protected override bool IsOperationValid(double left, double right, out String errorMsg)
         {
             bool willOverflow = false;
             // Can't overflow if first operand is 0.
@@ -39,6 +39,16 @@ namespace ConsoleApplication1.Operators
                     willOverflow = (absA > -absB * double.MinValue);
                 }
             }
+
+            if (willOverflow)
+            {
+                errorMsg = "Division overflow!";
+            }
+            else
+            {
+                errorMsg = null;
+            }
+
             return !willOverflow;
         }
 

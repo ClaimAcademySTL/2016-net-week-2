@@ -18,7 +18,7 @@ namespace ConsoleApplication1.Operators
 
         protected abstract int GetSignMultiplier(OperandSides side);
 
-        protected override bool IsOperationValid(double left, double right)
+        protected override bool IsOperationValid(double left, double right, out String errorMsg)
         {
             double effectiveLeft = left * GetSignMultiplier(OperandSides.LEFT);
             double effectiveRight = right * GetSignMultiplier(OperandSides.RIGHT);
@@ -35,6 +35,15 @@ namespace ConsoleApplication1.Operators
             {
                 double roomForOverflow = double.MinValue - effectiveLeft; // non-positive
                 willOverflow = (effectiveRight < roomForOverflow);
+            }
+
+            if (willOverflow)
+            {
+                errorMsg = "Addition or subtraction overflow!";
+            }
+            else
+            {
+                errorMsg = null;
             }
 
             return !willOverflow; ;

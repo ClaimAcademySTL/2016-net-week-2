@@ -15,9 +15,21 @@ namespace ConsoleApplication1.Operators
 
         public override string Symbol { get { return OperatorSymbol; } }
 
-        protected override bool IsOperationValid(double left, double right)
+        protected override bool IsOperationValid(double left, double right, out String errorMsg)
         {
-            return (right != 0);
+            bool success;
+            if (right == 0)
+            {
+                success = false;
+                errorMsg = "Attempt to divide by zero!";
+            }
+            else
+            {
+                
+                success = true;
+                errorMsg = null;
+            }
+            return success;
         }
 
         protected override double PerformOperationWithoutChecking(double left, double right)

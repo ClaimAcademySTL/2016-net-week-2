@@ -15,7 +15,7 @@ namespace ConsoleApplication1.Operators
 
         public override string Symbol { get { return OperatorSymbol; } }
 
-        protected override bool IsOperationValid(double left, double right)
+        protected override bool IsOperationValid(double left, double right, out String errorMsg)
         {
             bool willOverflow = false;
             // Can't overflow if absolute value of either 
@@ -38,6 +38,15 @@ namespace ConsoleApplication1.Operators
                     double roomForOverflow = (double.MinValue / absA);
                     willOverflow = (absB > -roomForOverflow);
                 }
+            }
+
+            if (willOverflow)
+            {
+                errorMsg = "Multiplication will overflow!";
+            }
+            else
+            {
+                errorMsg = null;
             }
 
             return !willOverflow;

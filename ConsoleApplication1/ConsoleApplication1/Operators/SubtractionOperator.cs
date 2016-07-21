@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ConsoleApplication1.Operators
 {
-    class SubtractionOperator : BinaryOperator
+    class SubtractionOperator : AddlikeOperator
     {
         public const String OperatorSymbol = "-";
         private const int _precedence = 1;
@@ -15,30 +15,19 @@ namespace ConsoleApplication1.Operators
 
         public override string Symbol { get { return OperatorSymbol; } }
 
-        protected override bool IsOperationValid(double left, double right)
+        protected override int GetSignMultiplier(OperandSides side)
         {
-            // We can only overflow if both a and b have opposite sign
-            // (and both are non-zero).
-            bool willOverflow = false;
-            int left = 0;
-            int b = 0;
-            if (left > 0 && b < 0)
+            switch (side)
             {
-                double roomForOverflow = double.MaxValue - left; // non-negative
-                willOverflow = (b < -roomForOverflow);
-            }
-            else if (left < 0 && b > 0)
-            {
-                double roomForOverflow = double.MinValue - left; // non-positive
-                willOverflow = (b > -roomForOverflow);
-            }
+                case OperandSides.LEFT:
+                    return 1;
 
-            return !willOverflow;
-        }
+                case OperandSides.RIGHT:
+                    return -1;
 
-        protected override double PerformOperationWithoutChecking(double left, double right)
-        {
-            throw new NotImplementedException();
+                default:
+                    return 0;
+            }
         }
     }
 }

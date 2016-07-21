@@ -11,11 +11,11 @@ namespace ConsoleApplication1.Operators
         public abstract String Symbol { get; }
         public abstract int Precedence { get; }
 
-        public bool PerformOperation(double left, double right, out double result)
+        public bool PerformOperation(double left, double right, out double result, out String errorMsg)
         {
             result = 0;
             bool success;
-            if (IsOperationValid(left, right))
+            if (IsOperationValid(left, right, out errorMsg))
             {
                 success = true;
                 result = PerformOperationWithoutChecking(left, right);
@@ -28,7 +28,7 @@ namespace ConsoleApplication1.Operators
             return success;
         }
 
-        protected abstract bool IsOperationValid(double left, double right);
+        protected abstract bool IsOperationValid(double left, double right, out String errorMsg);
         protected abstract double PerformOperationWithoutChecking(double left, double right);
     }
 }

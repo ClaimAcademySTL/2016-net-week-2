@@ -197,37 +197,49 @@ namespace ConsoleApplication1
         /**
          * Calculate the result of a single arithmetic operation
          */
-        private static bool DoOperation(double left, double right, String oper, out double result, out String errorMsg)
+        private static bool DoOperation(double left, double right, String operatorSymbol, out double result, out String errorMsg)
         {
-            switch (oper)
+            result = 0;
+
+            Operators.BinaryOperator oper = Operators.BinaryOperatorFactory.Create(operatorSymbol, out errorMsg);
+            if (oper == null)
             {
-                // User wants to add
-                case "+":
-                    return Add(left, right, out result, out errorMsg);
-
-                // User wants to subtract
-                case "-":
-                    return Subtract(left, right, out result, out errorMsg);
-
-                // User wants to multiply
-                case "*":
-                    return Multiply(left, right, out result, out errorMsg);
-
-                // User wants to divide
-                case "/":
-                    return Divide(left, right, out result, out errorMsg);
-
-                // User wants to use the modulus operator
-                case "%":
-                    return GetRemainder(left, right, out result, out errorMsg);
-
-                default:
-                    // We should never get here unless allowedOperators is wrong.
-                    errorMsg = String.Format("'{0}' is not a valid operator!", oper);
-                    result = 0;
-                    return false;
-
+                // Failed to get the operator
+                return false;
             }
+            
+            // Operator successful, do the operation
+            return oper.PerformOperation(left, right, out result, out errorMsg);
+
+            //switch (operatorSymbol)
+            //{
+            //    // User wants to add
+            //    case "+":
+            //        return Add(left, right, out result, out errorMsg);
+
+            //    // User wants to subtract
+            //    case "-":
+            //        return Subtract(left, right, out result, out errorMsg);
+
+            //    // User wants to multiply
+            //    case "*":
+            //        return Multiply(left, right, out result, out errorMsg);
+
+            //    // User wants to divide
+            //    case "/":
+            //        return Divide(left, right, out result, out errorMsg);
+
+            //    // User wants to use the modulus operator
+            //    case "%":
+            //        return GetRemainder(left, right, out result, out errorMsg);
+
+            //    default:
+            //        // We should never get here unless allowedOperators is wrong.
+            //        errorMsg = String.Format("'{0}' is not a valid operator!", operatorSymbol);
+            //        result = 0;
+            //        return false;
+
+            //}
         }
 
         /**
