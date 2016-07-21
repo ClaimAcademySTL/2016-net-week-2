@@ -1,0 +1,2 @@
+C:\Users\erich\code\2016-net-week-2\Week2Quiz\Week2Quiz\bin\Debug\Week2Quiz.exe.config
+C:\Users\erich\code\2016-net-week-2\Week2Quiz\Week2Quiz\obj\Debug\Week2Quiz.csprojResolveAssemblyReference.cache

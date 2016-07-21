@@ -24,33 +24,32 @@ namespace ConsoleApplication1.Input
 
             _tokens = tokens;
 
-            
-            bool isLengthValid = CheckTokenCount();
-            if (!isLengthValid)
+            // Must have an odd number of tokens, with at least 3, or else
+            // we don't have a series of binary operators.
+            bool isLengthValid;
+            if (tokens.Length > 2 && tokens.Length % 2 == 1)
             {
+                isLengthValid = true;
+            }
+            else
+            {
+                isLengthValid = false;
                 errorMsg = "Invalid number of tokens. Expression is not a series of binary operators with operands.";
             }
             bool areOperatorsValid = false;
             bool areOperandsValid = false;
             if (isLengthValid)
             {
-                areOperatorsValid = ConvertTokensToOperators(out operators, out errorMsg);
+                areOperatorsValid = ConvertTokensToOperators(tokens, out operators, out errorMsg);
             }
             if (areOperatorsValid)
             {
-                areOperandsValid = ConvertTokensToOperands(out operands, out errorMsg);
+                areOperandsValid = ConvertOperands(tokens, out operands, out errorMsg);
             }
             return areOperandsValid;
         }
 
-        private bool CheckTokenCount()
-        {
-            // Must have an odd number of tokens, with at least 3, or else
-            // we don't have a series of binary operators.
-            return (_tokens.Length > 2 && _tokens.Length % 2 == 1);
-        }
-
-        private bool ConvertTokensToOperators(out Operators.BinaryOperator[] operators, out String errorMsg)
+        private bool ConvertTokensToOperators(String[] tokens, out Operators.BinaryOperator[] operators, out String errorMsg)
         {
             errorMsg = null;
 
@@ -58,13 +57,13 @@ namespace ConsoleApplication1.Input
             // should be an operator, so there are ((tokens.Length - 1) / 2) 
             // operators. Because integer division truncates, this is the same
             // as (tokens.Length / 2).
-            operators = new Operators.BinaryOperator[_tokens.Length / 2];
+            operators = new Operators.BinaryOperator[tokens.Length / 2];
             bool result = true;
 
             for (int operatorIndex = 0; operatorIndex < operators.Length; operatorIndex++)
             {
                 int tokenIndex = (2 * operatorIndex) + 1;
-                operators[operatorIndex] = Operators.BinaryOperatorFactory.Create(_tokens[tokenIndex], out errorMsg);
+                operators[operatorIndex] = Operators.BinaryOperatorFactory.Create(tokens[tokenIndex], out errorMsg);
                 if (operators[operatorIndex] == null)
                 {
                     // Couldn't convert to an operator. Stop everything!
@@ -82,24 +81,24 @@ namespace ConsoleApplication1.Input
          * holds the value corresponding to the same index in tokens. Returns 
          * true if successful, false otherwise.
          */
-        private bool ConvertTokensToOperands(out double[] operands, out String errorMsg)
+        private bool ConvertOperands(String[] tokens, out double[] operands, out String errorMsg)
         {
             errorMsg = null;
             bool result = false;
 
             // Every even-numbered token is an operand, and there are an
             // odd number of tokens.
-            operands = new double[(_tokens.Length + 1) / 2];
+            operands = new double[(tokens.Length + 1) / 2];
 
             // Each even-numbered element must be an operand.
             for (int operandIndex = 0; operandIndex < operands.Length; operandIndex++)
             {
                 int tokenIndex = operandIndex * 2;
-                result = double.TryParse(_tokens[tokenIndex], out operands[operandIndex]);
+                result = double.TryParse(tokens[tokenIndex], out operands[operandIndex]);
                 if (!result)
                 {
                     // Not a valid operand. No need to continue checking.
-                    errorMsg = String.Format("'{0}' is not a valid number!", _tokens[tokenIndex]);
+                    errorMsg = String.Format("'{0}' is not a valid number!", tokens[tokenIndex]);
                     break;
                 }
 

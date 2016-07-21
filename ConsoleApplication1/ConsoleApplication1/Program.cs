@@ -10,6 +10,15 @@ namespace ConsoleApplication1
     {
         static void Main(string[] args)
         {
+            // Determine what operators can be used and their order
+            // of operations.
+            String[] allowedOperators = { "+", "-", "*", "/", "%" };
+            String[][] orderOfOperations = new String[][]
+            {
+                new String[] {"*", "/", "%" },
+                new String[] {"+", "-"}
+            };
+
             bool isValid;
             //String[] inputTokens;
             double[] inputOperands;
@@ -19,7 +28,7 @@ namespace ConsoleApplication1
             do
             {
                 String errorMsg;
-                String userInput = GetUserInput();
+                String userInput = GetUserInput(allowedOperators);
                 isValid = ParseInput(userInput, out operators, out inputOperands, out errorMsg);
                 if (!isValid)
                 {
@@ -55,19 +64,27 @@ namespace ConsoleApplication1
         {
             // Reconstruct the input expression
             String expr = "";
-            int operatorIndex;
-            for (operatorIndex = 0; operatorIndex < operators.Length; operatorIndex++)
+            for (int operIndex = 0; operIndex < operators.Length; operIndex++)
             {
-                // For every operator, include the operand to its left, followed by the operator.
-                // The operator to the left of an operand has the same index as the operand.
-                expr = String.Format("{0}{1} {2} ", expr, inputOperands[operatorIndex], operators[operatorIndex]);
+                int leftOperandIndex = 3;
+
+                if (operIndex % 2 == 0)
+                {
+                    // Even-numbered tokens are numeric operands.
+                    expr += inputOperands[operIndex].ToString();
+                }
+                else
+                {
+                    // Odd-numbered tokens are operators, stored as strings.
+                    expr += inputTokens[operIndex];
+                }
+                // Separate each token with a space. This will also add a space after
+                // the last token.
+                expr += " ";
             }
 
-            // Now get the operand to the right of the last operator (which is
-            // to the left of a nonexistent one-after-the-last operator). 
-            // Also, include the result of the calculation.
             // Write out to the screen
-            Console.WriteLine("{0}{1} = {2}", expr, inputOperands[operatorIndex], result);
+            Console.WriteLine("{0}= {1}", expr, result);
         }
 
         /**
@@ -92,9 +109,7 @@ namespace ConsoleApplication1
             if (startIndex == stopIndex)
             {
                 // Base case, a single value
-                // Result is the value of the operand to the left of the operator
-                // at startIndex. This operand has the same index as the operator.
-                result = inputOperands[startIndex];
+                result = inputOperands[GetLeftOperandIndexFromOperatorIndex(startIndex)];
                 return true;
             }
 
@@ -118,10 +133,10 @@ namespace ConsoleApplication1
             return success;
         }
 
-        //private static int GetLeftOperandIndexFromOperatorIndex(int operatorIndex)
-        //{
-        //    return operatorIndex * 2;
-        //}
+        private static int GetLeftOperandIndexFromOperatorIndex(int operatorIndex)
+        {
+            return operatorIndex * 2;
+        }
 
         
         /**
@@ -338,10 +353,13 @@ namespace ConsoleApplication1
         }
 
         /**
-         * Parse input into an array of operators and an array of numeric operands.
-         * Each element of operands corresponds to the element to the left of the
-         * same-indexed element of operators. Returns true if parsing was successful, 
-         * false otherwise.
+         * Parse input into an array of tokens and an array of numeric operands.
+         * Each odd-numbered element of tokens will hold an operator in the form
+         * of a String (even-numbered elements should be ignored, as they contain
+         * the String form of the operands, as the user typed them). Each 
+         * even-numbered element of operands is a numeric operand (odd-numbered 
+         * elements contain 0.0 and should be ignored). Returns true if parsing
+         * was successful, false otherwise.
          */
         private static bool ParseInput(String inputString, out Operators.BinaryOperator[] operators, out double[] operands, out String errorMsg)
         {
@@ -379,9 +397,18 @@ namespace ConsoleApplication1
          * Prompt the user for an expression, and return the string that the 
          * user enters.
          */
-        private static string GetUserInput()
+        private static string GetUserInput(string[] operators)
         {
-            String prompt = "Please enter an expression using binary operators.\nExample expression: '75.3 + -20.7 - 35 * 6e-20'\n  > ";
+            String prompt = "Please enter an expression using binary operators.\nAllowed operators are(";
+            for (int i = 0; i < operators.Length; i++)
+            {
+                prompt += String.Format("'{0}'", operators[i]);
+                if (i < operators.Length - 1)
+                {
+                    prompt += ", ";
+                }
+            }
+            prompt += ").\nExample expression: '75.3 + -20.7 - 35 * 6e-20'\n  > ";
             Console.Write(prompt);
             return Console.ReadLine();
         }
@@ -453,7 +480,7 @@ namespace ConsoleApplication1
             for (int operandIndex = 0; operandIndex < operands.Length; operandIndex++)
             {
                 int tokenIndex = operandIndex * 2;
-                result = double.TryParse(tokens[tokenIndex], out operands[operandIndex]);
+                result = double.TryParse(tokens[tokenIndex], out operands[tokenIndex]);
                 if (!result)
                 {
                     // Not a valid operand. No need to continue checking.
