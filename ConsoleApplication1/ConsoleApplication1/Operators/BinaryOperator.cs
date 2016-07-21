@@ -8,6 +8,8 @@ namespace ConsoleApplication1.Operators
 {
     abstract class BinaryOperator
     {
+        public const int WorstPrecedence = 1;
+
         public abstract String Symbol { get; }
         public abstract int Precedence { get; }
 
@@ -28,7 +30,14 @@ namespace ConsoleApplication1.Operators
             return success;
         }
 
+        public override string ToString()
+        {
+            return Symbol;
+        }
+
         protected abstract bool IsOperationValid(double left, double right, out String errorMsg);
         protected abstract double PerformOperationWithoutChecking(double left, double right);
+
+        
     }
 }

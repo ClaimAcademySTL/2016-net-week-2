@@ -10,25 +10,17 @@ namespace ConsoleApplication1
     {
         static void Main(string[] args)
         {
-            // Determine what operators can be used and their order
-            // of operations.
-            String[] allowedOperators = { "+", "-", "*", "/", "%" };
-            String[][] orderOfOperations = new String[][]
-            {
-                new String[] {"*", "/", "%" },
-                new String[] {"+", "-"}
-            };
-
             bool isValid;
-            String[] inputTokens;
+            //String[] inputTokens;
             double[] inputOperands;
+            Operators.BinaryOperator[] operators;
 
             // Keep getting user input until we get something valid.
             do
             {
                 String errorMsg;
-                String userInput = GetUserInput(allowedOperators);
-                isValid = ParseInput(userInput, allowedOperators, out inputTokens, out inputOperands, out errorMsg);
+                String userInput = GetUserInput();
+                isValid = ParseInput(userInput, out operators, out inputOperands, out errorMsg);
                 if (!isValid)
                 {
                     Console.WriteLine(errorMsg);
@@ -38,12 +30,12 @@ namespace ConsoleApplication1
             // Calculate the result
             String resultError;
             double result;
-            bool success = DoOperations(inputTokens, inputOperands, orderOfOperations, out result, out resultError);
+            bool success = DoOperations(operators, inputOperands, out result, out resultError);
 
             // If everything was good, show the result.
             if (success)
             {
-                ShowResult(inputTokens, inputOperands, result);
+                ShowResult(operators, inputOperands, result);
             }
             else
             {
@@ -59,29 +51,23 @@ namespace ConsoleApplication1
         /**
          * Display the result to the user in a helpful way.
          */
-        private static void ShowResult(string[] inputTokens, double[] inputOperands, double result)
+        private static void ShowResult(Operators.BinaryOperator[] operators, double[] inputOperands, double result)
         {
             // Reconstruct the input expression
             String expr = "";
-            for (int i = 0; i < inputTokens.Length; i++)
+            int operatorIndex;
+            for (operatorIndex = 0; operatorIndex < operators.Length; operatorIndex++)
             {
-                if (i % 2 == 0)
-                {
-                    // Even-numbered tokens are numeric operands.
-                    expr += inputOperands[i].ToString();
-                }
-                else
-                {
-                    // Odd-numbered tokens are operators, stored as strings.
-                    expr += inputTokens[i];
-                }
-                // Separate each token with a space. This will also add a space after
-                // the last token.
-                expr += " ";
+                // For every operator, include the operand to its left, followed by the operator.
+                // The operator to the left of an operand has the same index as the operand.
+                expr = String.Format("{0}{1} {2} ", expr, inputOperands[operatorIndex], operators[operatorIndex]);
             }
 
+            // Now get the operand to the right of the last operator (which is
+            // to the left of a nonexistent one-after-the-last operator). 
+            // Also, include the result of the calculation.
             // Write out to the screen
-            Console.WriteLine("{0}= {1}", expr, result);
+            Console.WriteLine("{0}{1} = {2}", expr, inputOperands[operatorIndex], result);
         }
 
         /**
@@ -89,9 +75,9 @@ namespace ConsoleApplication1
          * Convenience method that doesn't need a starting and ending point 
          * (which is needed by RecurseOperations).
          */
-        private static bool DoOperations(String[] inputTokens, double[] inputOperands, String[][] operatorOrder, out double result, out String errorMsg)
+        private static bool DoOperations(Operators.BinaryOperator[] operators, double[] inputOperands, out double result, out String errorMsg)
         {
-            return RecurseOperations(inputTokens, inputOperands, operatorOrder, 0, inputTokens.Length, out result, out errorMsg);
+            return RecurseOperations(operators, inputOperands, 0, operators.Length, out result, out errorMsg);
         }
 
         /**
@@ -99,13 +85,15 @@ namespace ConsoleApplication1
          * Takes a starting and stopping index to determine what portion of the tokens/operands
          * to process. startIndex is included, stopIndex is excluded.
          */
-        private static bool RecurseOperations(String[] inputTokens, double[] inputOperands, String[][] operatorOrder, int startIndex, int stopIndex, out double result, out String errorMsg)
+        private static bool RecurseOperations(Operators.BinaryOperator[] operators, double[] inputOperands, int startIndex, int stopIndex, out double result, out String errorMsg)
         {
             errorMsg = null;
             result = 0;
-            if (stopIndex - startIndex == 1)
+            if (startIndex == stopIndex)
             {
                 // Base case, a single value
+                // Result is the value of the operand to the left of the operator
+                // at startIndex. This operand has the same index as the operator.
                 result = inputOperands[startIndex];
                 return true;
             }
@@ -113,22 +101,27 @@ namespace ConsoleApplication1
             // Find the rightmost, lowest precedence operator. This allows
             // all the higher precedence operators to be evaluated (in leftResult
             // and rightResult) before we call DoOperation on this one.
-            int operIndex = FindLastOperatorWithPrecedence(inputTokens, operatorOrder, startIndex, stopIndex);
+            int operIndex = FindLastOperatorWithPrecedence(operators, startIndex, stopIndex);
 
             // Get the results for each side of the operator
             double leftResult;
             double rightResult = 0;
-            bool success = (RecurseOperations(inputTokens, inputOperands, operatorOrder, startIndex, operIndex, out leftResult, out errorMsg) &&
-                RecurseOperations(inputTokens, inputOperands, operatorOrder, operIndex + 1, stopIndex, out rightResult, out errorMsg));
+            bool success = (RecurseOperations(operators, inputOperands, startIndex, operIndex, out leftResult, out errorMsg) &&
+                RecurseOperations(operators, inputOperands, operIndex + 1, stopIndex, out rightResult, out errorMsg));
 
             if (success)
             {
                 // Combine the results
-                success = DoOperation(leftResult, rightResult, inputTokens[operIndex], out result, out errorMsg);
+                success = operators[operIndex].PerformOperation(leftResult, rightResult, out result, out errorMsg);
             }
 
             return success;
         }
+
+        //private static int GetLeftOperandIndexFromOperatorIndex(int operatorIndex)
+        //{
+        //    return operatorIndex * 2;
+        //}
 
         
         /**
@@ -169,15 +162,15 @@ namespace ConsoleApplication1
          * multiple operators tying for lowest precedence, returns index of the 
          * rightmost of the tied operators.
          */
-        private static int FindLastOperatorWithPrecedence(String[] tokens, String[][] operatorOrder, int startIndex, int stopIndex)
+        private static int FindLastOperatorWithPrecedence(Operators.BinaryOperator[] operators, int startIndex, int stopIndex)
         {
             int worstPrecedence = -1;
-            int worstPossiblePrecedence = operatorOrder.Length - 1;
+            int worstPossiblePrecedence = Operators.BinaryOperator.WorstPrecedence;
             int worstIndex = -1;
             
-            for (int i = stopIndex - 2; i > startIndex; i -= 2)
+            for (int i = stopIndex - 1; i >= startIndex; i--)
             {
-                int precedence = GetOperatorPrecedenceLevel(tokens[i], operatorOrder);
+                int precedence = operators[i].Precedence;
                 if (precedence > worstPrecedence)
                 {
                     worstPrecedence = precedence;
@@ -194,53 +187,14 @@ namespace ConsoleApplication1
             return worstIndex;
         }
 
-        /**
-         * Calculate the result of a single arithmetic operation
-         */
-        private static bool DoOperation(double left, double right, String operatorSymbol, out double result, out String errorMsg)
-        {
-            result = 0;
-
-            Operators.BinaryOperator oper = Operators.BinaryOperatorFactory.Create(operatorSymbol, out errorMsg);
-            if (oper == null)
-            {
-                // Failed to get the operator
-                return false;
-            }
-            
-            // Operator successful, do the operation
-            return oper.PerformOperation(left, right, out result, out errorMsg);
-
-            //switch (operatorSymbol)
-            //{
-            //    // User wants to add
-            //    case "+":
-            //        return Add(left, right, out result, out errorMsg);
-
-            //    // User wants to subtract
-            //    case "-":
-            //        return Subtract(left, right, out result, out errorMsg);
-
-            //    // User wants to multiply
-            //    case "*":
-            //        return Multiply(left, right, out result, out errorMsg);
-
-            //    // User wants to divide
-            //    case "/":
-            //        return Divide(left, right, out result, out errorMsg);
-
-            //    // User wants to use the modulus operator
-            //    case "%":
-            //        return GetRemainder(left, right, out result, out errorMsg);
-
-            //    default:
-            //        // We should never get here unless allowedOperators is wrong.
-            //        errorMsg = String.Format("'{0}' is not a valid operator!", operatorSymbol);
-            //        result = 0;
-            //        return false;
-
-            //}
-        }
+        ///**
+        // * Calculate the result of a single arithmetic operation
+        // */
+        //private static bool DoOperation(double left, double right, Operators.BinaryOperator operatorSymbol, out double result, out String errorMsg)
+        //{
+        //    // Operator successful, do the operation
+        //    return oper.PerformOperation(left, right, out result, out errorMsg);
+        //}
 
         /**
          * Add two doubles if the result would not be greater than double.MaxValue
@@ -384,19 +338,17 @@ namespace ConsoleApplication1
         }
 
         /**
-         * Parse input into an array of tokens and an array of numeric operands.
-         * Each odd-numbered element of tokens will hold an operator in the form
-         * of a String (even-numbered elements should be ignored, as they contain
-         * the String form of the operands, as the user typed them). Each 
-         * even-numbered element of operands is a numeric operand (odd-numbered 
-         * elements contain 0.0 and should be ignored). Returns true if parsing
-         * was successful, false otherwise.
+         * Parse input into an array of operators and an array of numeric operands.
+         * Each element of operands corresponds to the element to the left of the
+         * same-indexed element of operators. Returns true if parsing was successful, 
+         * false otherwise.
          */
-        private static bool ParseInput(String inputString, String[] operators, out String[] tokens, out double[] operands, out String errorMsg)
+        private static bool ParseInput(String inputString, out Operators.BinaryOperator[] operators, out double[] operands, out String errorMsg)
         {
             errorMsg = null;
             operands = null;
-            tokens = inputString.Split(' ');
+            operators = null;
+            String[] tokens = inputString.Split(' ');
 
             // Must have an odd number of tokens, with at least 3, or else
             // we don't have a series of binary operators.
@@ -414,7 +366,7 @@ namespace ConsoleApplication1
             bool areOperandsValid = false;
             if (isLengthValid)
             {
-                areOperatorsValid = CheckOperators(operators, tokens, out errorMsg);
+                areOperatorsValid = ConvertTokensToOperators(tokens, out operators, out errorMsg);
             }
             if (areOperatorsValid)
             {
@@ -427,18 +379,9 @@ namespace ConsoleApplication1
          * Prompt the user for an expression, and return the string that the 
          * user enters.
          */
-        private static string GetUserInput(string[] operators)
+        private static string GetUserInput()
         {
-            String prompt = "Please enter an expression using binary operators.\nAllowed operators are(";
-            for (int i = 0; i < operators.Length; i++)
-            {
-                prompt += String.Format("'{0}'", operators[i]);
-                if (i < operators.Length - 1)
-                {
-                    prompt += ", ";
-                }
-            }
-            prompt += ").\nExample expression: '75.3 + -20.7 - 35 * 6e-20'\n  > ";
+            String prompt = "Please enter an expression using binary operators.\nExample expression: '75.3 + -20.7 - 35 * 6e-20'\n  > ";
             Console.Write(prompt);
             return Console.ReadLine();
         }
@@ -465,6 +408,31 @@ namespace ConsoleApplication1
             return result;
         }
 
+        private static bool ConvertTokensToOperators(String[] tokens, out Operators.BinaryOperator[] operators, out String errorMsg)
+        {
+            errorMsg = null;
+
+            // tokens should have an odd length. Every odd-numbered token
+            // should be an operator, so there are ((tokens.Length - 1) / 2) 
+            // operators. Because integer division truncates, this is the same
+            // as (tokens.Length / 2).
+            operators = new Operators.BinaryOperator[tokens.Length / 2];
+            bool result = true;
+
+            for (int operatorIndex = 0; operatorIndex < operators.Length; operatorIndex++)
+            {
+                int tokenIndex = (2 * operatorIndex) + 1;
+                operators[operatorIndex] = Operators.BinaryOperatorFactory.Create(tokens[tokenIndex], out errorMsg);
+                if (operators[operatorIndex] == null)
+                {
+                    // Couldn't convert to an operator. Stop everything!
+                    result = false;
+                    break;
+                }
+            }
+            return result;
+        }
+
         /**
          * Convert all the numeric operands in the String array tokens from
          * Strings to doubles. Odd-numbered elements of the out array operands
@@ -477,14 +445,15 @@ namespace ConsoleApplication1
             errorMsg = null;
             bool result = false;
 
-            // This wastes space, but makes handling easier. The operands remain keep the same
-            // indices in the output array that they had in the tokens array.
-            operands = new double[tokens.Length];
+            // Every even-numbered token is an operand, and there are an
+            // odd number of tokens.
+            operands = new double[(tokens.Length + 1) / 2];
 
             // Each even-numbered element must be an operand.
-            for (int tokenIndex = 0; tokenIndex < tokens.Length; tokenIndex += 2)
+            for (int operandIndex = 0; operandIndex < operands.Length; operandIndex++)
             {
-                result = double.TryParse(tokens[tokenIndex], out operands[tokenIndex]);
+                int tokenIndex = operandIndex * 2;
+                result = double.TryParse(tokens[tokenIndex], out operands[operandIndex]);
                 if (!result)
                 {
                     // Not a valid operand. No need to continue checking.

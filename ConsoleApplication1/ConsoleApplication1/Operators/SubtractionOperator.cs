@@ -9,10 +9,6 @@ namespace ConsoleApplication1.Operators
     class SubtractionOperator : AddlikeOperator
     {
         public const String OperatorSymbol = "-";
-        private const int _precedence = 1;
-
-        public override int Precedence { get { return _precedence; } }
-
         public override string Symbol { get { return OperatorSymbol; } }
 
         protected override int GetSignMultiplier(OperandSides side)

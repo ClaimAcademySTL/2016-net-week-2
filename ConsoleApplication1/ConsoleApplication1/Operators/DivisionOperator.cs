@@ -9,10 +9,6 @@ namespace ConsoleApplication1.Operators
     class DivisionOperator : MultiplylikeOperator
     {
         public const String OperatorSymbol = "/";
-        private const int _precedence = 1;
-
-        public override int Precedence { get { return _precedence; } }
-
         public override string Symbol { get { return OperatorSymbol; } }
 
         protected override bool IsOperationValid(double left, double right, out String errorMsg)

@@ -43,6 +43,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Input\InputPrompter.cs" />
+    <Compile Include="Input\Parser.cs" />
+    <Compile Include="Input\Tokenizer.cs" />
     <Compile Include="Operators\AdditionOperator.cs" />
     <Compile Include="Operators\AddlikeOperator.cs" />
     <Compile Include="Operators\BinaryOperatorFactory.cs" />
