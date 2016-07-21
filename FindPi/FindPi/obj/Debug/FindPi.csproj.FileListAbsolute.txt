@@ -1,0 +1,6 @@
+C:\Users\erich\code\2016-net-week-2\FindPi\FindPi\bin\Debug\FindPi.exe.config
+C:\Users\erich\code\2016-net-week-2\FindPi\FindPi\bin\Debug\FindPi.exe
+C:\Users\erich\code\2016-net-week-2\FindPi\FindPi\bin\Debug\FindPi.pdb
+C:\Users\erich\code\2016-net-week-2\FindPi\FindPi\obj\Debug\FindPi.csprojResolveAssemblyReference.cache
+C:\Users\erich\code\2016-net-week-2\FindPi\FindPi\obj\Debug\FindPi.exe
+C:\Users\erich\code\2016-net-week-2\FindPi\FindPi\obj\Debug\FindPi.pdb
