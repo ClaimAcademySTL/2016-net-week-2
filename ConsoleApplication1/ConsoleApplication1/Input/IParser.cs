@@ -12,6 +12,6 @@ namespace ConsoleApplication1.Input
          * Parse an array of input tokens into a result of type T. Returns
          * true on successful parsing, false on failure.
          */
-        bool Parse(String[] tokens, out T result, out String errorMsg);
+        T Parse(String[] tokens);
     }
 }

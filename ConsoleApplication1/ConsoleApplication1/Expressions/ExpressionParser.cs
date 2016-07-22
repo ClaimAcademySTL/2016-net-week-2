@@ -12,102 +12,98 @@ namespace ConsoleApplication1.Expressions
         private String[] _tokens;
 
         /**
-         * Parse input tokens into an Expression. Returns true if parsing was 
-         * successful, false otherwise.
+         * Parse input tokens into an Expression. Throws ArgumentException if
+         * tokens cannot contain a valid expression due to its length. Throws
+         * BadTokenException if not all operators and operands are valid.
          */
-        public bool Parse(String[] tokens, out Expression expr, out String errorMsg)
+        public Expression Parse(String[] tokens)
         {
-            errorMsg = null;
-            expr = null;
-
             _tokens = tokens;
 
-            bool isLengthValid = CheckTokenCount();
-            if (!isLengthValid)
-            {
-                errorMsg = "Invalid number of tokens. Expression is not a series of binary operators with operands.";
-            }
-            bool areOperatorsValid = false;
-            bool areOperandsValid = false;
-            Operators.BinaryOperator[] operators = null;
-            if (isLengthValid)
-            {
-                areOperatorsValid = ConvertTokensToOperators(out operators, out errorMsg);
-            }
-            double[] operands = null;
-            if (areOperatorsValid)
-            {
-                areOperandsValid = ConvertTokensToOperands(out operands, out errorMsg);
-            }
+            // Throws ArgumentException if length is invalid
+            CheckTokenCount();
 
-            if (areOperandsValid)
-            {
-                expr = new Expression(operators, operands);
-            }
-
-            return areOperandsValid;
+            // Throws BadTokenException if an invalid operator is found
+            Operators.BinaryOperator[] operators = ConvertTokensToOperators();
+            
+            // Throws BadTokenException if an invalid operand is found
+            double[] operands = ConvertTokensToOperands();
+            
+            return new Expression(operators, operands);
         }
 
-        private bool CheckTokenCount()
+        /**
+         * Do nothing if _tokens has a valid length, or throw an ArgumentException
+         * if the length is invalid.
+         */
+        private void CheckTokenCount()
         {
             // Must have an odd number of tokens, with at least 3, or else
             // we don't have a series of binary operators.
-            return (_tokens.Length > 2 && _tokens.Length % 2 == 1);
+
+            if (_tokens.Length <= 2)
+            {
+                throw new ArgumentException(String.Format("Not enough tokens. Expected at least 3, found {0}", _tokens.Length));
+            }
+
+            if (_tokens.Length % 2 == 0)
+            {
+                throw new ArgumentException("Should have an odd number of tokens, but have an even number.");
+            }
         }
 
-        private bool ConvertTokensToOperators(out Operators.BinaryOperator[] operators, out String errorMsg)
+        /**
+         * Throws a BadTokenException if an operator can't be converted
+         */
+        private Operators.BinaryOperator[] ConvertTokensToOperators()
         {
-            errorMsg = null;
-
             // tokens should have an odd length. Every odd-numbered token
             // should be an operator, so there are ((tokens.Length - 1) / 2) 
             // operators. Because integer division truncates, this is the same
             // as (tokens.Length / 2).
-            operators = new Operators.BinaryOperator[_tokens.Length / 2];
-            bool result = true;
+            Operators.BinaryOperator[] operators = new Operators.BinaryOperator[_tokens.Length / 2];
 
             for (int operatorIndex = 0; operatorIndex < operators.Length; operatorIndex++)
             {
                 int tokenIndex = (2 * operatorIndex) + 1;
+                String errorMsg;
                 operators[operatorIndex] = Operators.BinaryOperatorFactory.Create(_tokens[tokenIndex], out errorMsg);
                 if (operators[operatorIndex] == null)
                 {
                     // Couldn't convert to an operator. Stop everything!
-                    result = false;
-                    break;
+                    throw new BadTokenException(tokenIndex, errorMsg);
+                    
                 }
             }
-            return result;
+
+            return operators;
         }
 
         /**
          * Convert all the numeric operands in the String array _tokens from
          * Strings to doubles. Returns true if successful, false otherwise.
          */
-        private bool ConvertTokensToOperands(out double[] operands, out String errorMsg)
+        private double[] ConvertTokensToOperands()
         {
-            errorMsg = null;
-            bool result = false;
-
             // Every even-numbered token is an operand, and there are an
             // odd number of tokens.
-            operands = new double[(_tokens.Length + 1) / 2];
+            double[] operands = new double[(_tokens.Length + 1) / 2];
 
             // Each even-numbered element must be an operand.
             for (int operandIndex = 0; operandIndex < operands.Length; operandIndex++)
             {
                 int tokenIndex = operandIndex * 2;
-                result = double.TryParse(_tokens[tokenIndex], out operands[operandIndex]);
-                if (!result)
+                try
                 {
-                    // Not a valid operand. No need to continue checking.
-                    errorMsg = String.Format("'{0}' is not a valid number!", _tokens[tokenIndex]);
-                    break;
+                    operands[operandIndex] = double.Parse(_tokens[tokenIndex]);
                 }
-
+                catch (FormatException e)
+                {
+                    throw new BadTokenException(tokenIndex, String.Format("'{0}' is not a valid number!", _tokens[tokenIndex]), e);
+                }
             }
 
-            return result;
+            return operands;
         }
     }
 }

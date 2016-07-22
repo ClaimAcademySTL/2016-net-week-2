@@ -25,13 +25,28 @@ namespace ConsoleApplication1.Input
          */
         public bool GetAndParseInput(out T result, out String errorMsg)
         {
+            result = default(T);
+            errorMsg = null;
+
             InputPrompter prompter = new InputPrompter("Please enter an expression using binary operators.\nExample expression: '75.3 + -20.7 - 35 * 6e-20'");
             String inputString = prompter.GetInput(true);
 
             Tokenizer tokenizer = new Tokenizer(' ');
             String[] tokens = tokenizer.Tokenize(inputString);
 
-            return _parser.Parse(tokens, out result, out errorMsg);
+            bool success = false;
+            try
+            {
+                result = _parser.Parse(tokens);
+                success = true;
+            }
+            catch (Exception e)
+            {
+                errorMsg = e.Message;
+                // success remains false
+            }
+
+            return success;
         }
     }
 }
