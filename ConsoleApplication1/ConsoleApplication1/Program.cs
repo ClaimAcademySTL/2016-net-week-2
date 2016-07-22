@@ -29,12 +29,13 @@ namespace ConsoleApplication1
             // Calculate the result
             String resultError;
             double result;
-            bool success = DoOperations(operators, inputOperands, out result, out resultError);
+            Expressions.Expression expr = new Expressions.Expression(operators, inputOperands);
+            bool success = expr.Evaluate(out result, out resultError);
 
             // If everything was good, show the result.
             if (success)
             {
-                ShowResult(operators, inputOperands, result);
+                ShowResult(expr, result);
             }
             else
             {
@@ -50,23 +51,9 @@ namespace ConsoleApplication1
         /**
          * Display the result to the user in a helpful way.
          */
-        private static void ShowResult(Operators.BinaryOperator[] operators, double[] inputOperands, double result)
+        private static void ShowResult(Expressions.Expression expr, double result)
         {
-            // Reconstruct the input expression
-            String expr = "";
-            int operatorIndex;
-            for (operatorIndex = 0; operatorIndex < operators.Length; operatorIndex++)
-            {
-                // For every operator, include the operand to its left, followed by the operator.
-                // The operator to the left of an operand has the same index as the operand.
-                expr = String.Format("{0}{1} {2} ", expr, inputOperands[operatorIndex], operators[operatorIndex]);
-            }
-
-            // Now get the operand to the right of the last operator (which is
-            // to the left of a nonexistent one-after-the-last operator). 
-            // Also, include the result of the calculation.
-            // Write out to the screen
-            Console.WriteLine("{0}{1} = {2}", expr, inputOperands[operatorIndex], result);
+            Console.WriteLine("{0} = {1}", expr, result);
         }
 
         /**
