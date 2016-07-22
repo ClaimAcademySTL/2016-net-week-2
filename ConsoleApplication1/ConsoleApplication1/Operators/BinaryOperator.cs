@@ -8,8 +8,6 @@ namespace ConsoleApplication1.Operators
 {
     abstract class BinaryOperator
     {
-        public const int WorstPrecedence = 1;
-
         /**
          * The symbol representing this operation ("+" for addition, etc.)
          */

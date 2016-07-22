@@ -11,6 +11,10 @@ namespace ConsoleApplication1.Expressions
         private readonly Operators.BinaryOperator[] _operators;
         private readonly double[] _operands;
 
+        private bool _hasScannedForPrecedenceRange = false;
+        private int _bestPossiblePrecedence;
+        private int _worstPossiblePrecedence;
+
         /**
          * Turns an array of operators and an array of operands into an expression.
          * operators.Length must be at least 1, and operands.Length must be exactly
@@ -76,8 +80,9 @@ namespace ConsoleApplication1.Expressions
          */
         private int FindLastOperatorWithPrecedence(int startIndex, int stopIndex)
         {
-            int worstPrecedence = -1;
-            int worstPossiblePrecedence = Operators.BinaryOperator.WorstPrecedence;
+            ScanForPrecedenceRange();
+
+            int worstPrecedence = _bestPossiblePrecedence - 1;
             int worstIndex = -1;
 
             for (int i = stopIndex - 1; i >= startIndex; i--)
@@ -88,7 +93,7 @@ namespace ConsoleApplication1.Expressions
                     worstPrecedence = precedence;
                     worstIndex = i;
                 }
-                if (worstPrecedence == worstPossiblePrecedence)
+                if (worstPrecedence == _worstPossiblePrecedence)
                 {
                     // We have the lowest possible level. No point in continuing
                     // to search.
@@ -97,6 +102,26 @@ namespace ConsoleApplication1.Expressions
             }
 
             return worstIndex;
+        }
+
+        private void ScanForPrecedenceRange()
+        {
+            if (_hasScannedForPrecedenceRange) return;
+
+            bool hasLoopedOnce = false;
+
+            foreach (Operators.BinaryOperator oper in _operators) {
+                if (!hasLoopedOnce || oper.Precedence > _worstPossiblePrecedence)
+                {
+                    _worstPossiblePrecedence = oper.Precedence;
+                }
+                if (!hasLoopedOnce || oper.Precedence < _bestPossiblePrecedence)
+                {
+                    _bestPossiblePrecedence = oper.Precedence;
+                }
+
+                hasLoopedOnce = true;
+            }
         }
 
         public override string ToString()
