@@ -11,6 +11,11 @@ namespace ConsoleApplication1.Operators
         public const String OperatorSymbol = "/";
         public override string Symbol { get { return OperatorSymbol; } }
 
+        /**
+         * Precision could be lost without returning false (for example, when dividing 
+         * a very small magnitude number by a large magnitude number, the result could
+         * be 0).
+         */
         protected override bool IsOperationValid(double left, double right, out String errorMsg)
         {
             bool success;

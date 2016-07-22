@@ -11,6 +11,10 @@ namespace ConsoleApplication1.Operators
         public const String OperatorSymbol = "*";
         public override string Symbol { get { return OperatorSymbol; } }
 
+        /**
+         * Precision could be lost without returning false (for example, when adding 
+         * two numbers that each have a very small magnitude, the result could be 0).
+         */
         protected override bool IsOperationValid(double left, double right, out String errorMsg)
         {
             bool willOverflow = false;

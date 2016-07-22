@@ -11,12 +11,21 @@ namespace ConsoleApplication1.Expressions
         private readonly Operators.BinaryOperator[] _operators;
         private readonly double[] _operands;
 
+        /**
+         * Turns an array of operators and an array of operands into an expression.
+         * operators.Length must be at least 1, and operands.Length must be exactly
+         * operators.Length + 1.
+         */
         public Expression(Operators.BinaryOperator[] operators, double[] operands)
         {
             _operators = operators;
             _operands = operands;
+            // TODO: Check parameters and throw exception
         }
 
+        /**
+         * Evaluate the expression using the correct order of operations.
+         */
         public virtual bool Evaluate(out double result, out String errorMsg)
         {
             return RecursiveEvaluate(0, _operators.Length, out result, out errorMsg);

@@ -8,6 +8,11 @@ namespace ConsoleApplication1.Operators
 {
     static class BinaryOperatorFactory
     {
+        /**
+         * Create and return a new operator whose symbol matches 
+         * the symbol parameter. Returns null if symbol parameter
+         * does not match any recognized operator.
+         */
         public static BinaryOperator Create(String symbol, out String errorMsg)
         {
             errorMsg = null;

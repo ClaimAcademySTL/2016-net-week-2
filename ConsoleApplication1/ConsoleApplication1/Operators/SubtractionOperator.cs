@@ -11,6 +11,10 @@ namespace ConsoleApplication1.Operators
         public const String OperatorSymbol = "-";
         public override string Symbol { get { return OperatorSymbol; } }
 
+        /**
+         * Subtracting a - b is the same as adding a + -b. Left side gets
+         * a multiplier of 1, right side gets a multiplier of -1.
+         */
         protected override int GetSignMultiplier(OperandSides side)
         {
             switch (side)

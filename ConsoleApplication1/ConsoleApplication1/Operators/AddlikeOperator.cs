@@ -16,8 +16,21 @@ namespace ConsoleApplication1.Operators
             LEFT, RIGHT
         }
 
+        /**
+         * Return the effective sign for each operand side needed to
+         * convert this operation into pure addition. Return -1 for 
+         * negative, or 1 for positive (for example, subtracting
+         * a - b is the same as adding a + -b, so subtraction would return
+         * -1 for the right side). A subclass could legally return other 
+         * multipliers besides -1 and 1, but this would result in odd
+         * behavior
+         */
         protected abstract int GetSignMultiplier(OperandSides side);
 
+        /**
+         * Precision could be lost without returning false (for example, when adding 
+         * two numbers which greatly differ in magnitude).
+         */
         protected override bool IsOperationValid(double left, double right, out String errorMsg)
         {
             double effectiveLeft = left * GetSignMultiplier(OperandSides.LEFT);

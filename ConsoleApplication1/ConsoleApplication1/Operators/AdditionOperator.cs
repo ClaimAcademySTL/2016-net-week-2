@@ -13,6 +13,7 @@ namespace ConsoleApplication1.Operators
 
         protected override int GetSignMultiplier(AddlikeOperator.OperandSides side)
         {
+            // This is pure addition, so both sides have a multiplier of 1
             return 1;
         }
 

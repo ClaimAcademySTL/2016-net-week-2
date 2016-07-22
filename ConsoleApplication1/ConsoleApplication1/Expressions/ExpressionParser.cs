@@ -12,8 +12,8 @@ namespace ConsoleApplication1.Expressions
         private String[] _tokens;
 
         /**
-         * Parse input into an Expression. Returns true if parsing was successful, 
-         * false otherwise.
+         * Parse input tokens into an Expression. Returns true if parsing was 
+         * successful, false otherwise.
          */
         public bool Parse(String[] tokens, out Expression expr, out String errorMsg)
         {
@@ -81,11 +81,8 @@ namespace ConsoleApplication1.Expressions
         }
 
         /**
-         * Convert all the numeric operands in the String array tokens from
-         * Strings to doubles. Odd-numbered elements of the out array operands
-         * are 0.0 and should be ignored. Each even-numbered index in operands
-         * holds the value corresponding to the same index in tokens. Returns 
-         * true if successful, false otherwise.
+         * Convert all the numeric operands in the String array _tokens from
+         * Strings to doubles. Returns true if successful, false otherwise.
          */
         private bool ConvertTokensToOperands(out double[] operands, out String errorMsg)
         {
