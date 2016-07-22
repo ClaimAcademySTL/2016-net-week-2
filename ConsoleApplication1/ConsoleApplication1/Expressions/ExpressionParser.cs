@@ -3,29 +3,24 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using ConsoleApplication1.Input;
 
-namespace ConsoleApplication1.Input
+namespace ConsoleApplication1.Expressions
 {
-    class Parser
+    class ExpressionParser : IParser<Expression>
     {
-        private readonly String[] _tokens;
-
-        public Parser(String[] tokens)
-        {
-            _tokens = tokens;
-        }
+        private String[] _tokens;
 
         /**
-         * Parse input into an array of operators and an array of numeric operands.
-         * Each element of operands corresponds to the element to the left of the
-         * same-indexed element of operators. Returns true if parsing was successful, 
+         * Parse input into an Expression. Returns true if parsing was successful, 
          * false otherwise.
          */
-        public bool Parse(out Operators.BinaryOperator[] operators, out double[] operands, out String errorMsg)
+        public bool Parse(String[] tokens, out Expression expr, out String errorMsg)
         {
             errorMsg = null;
-            operands = null;
-            operators = null;
+            expr = null;
+
+            _tokens = tokens;
 
             bool isLengthValid = CheckTokenCount();
             if (!isLengthValid)
@@ -34,14 +29,22 @@ namespace ConsoleApplication1.Input
             }
             bool areOperatorsValid = false;
             bool areOperandsValid = false;
+            Operators.BinaryOperator[] operators = null;
             if (isLengthValid)
             {
                 areOperatorsValid = ConvertTokensToOperators(out operators, out errorMsg);
             }
+            double[] operands = null;
             if (areOperatorsValid)
             {
                 areOperandsValid = ConvertTokensToOperands(out operands, out errorMsg);
             }
+
+            if (areOperandsValid)
+            {
+                expr = new Expression(operators, operands);
+            }
+
             return areOperandsValid;
         }
 

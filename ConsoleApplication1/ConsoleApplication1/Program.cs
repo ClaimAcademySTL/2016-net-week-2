@@ -11,15 +11,15 @@ namespace ConsoleApplication1
         static void Main(string[] args)
         {
             bool isValid;
-            //String[] inputTokens;
-            double[] inputOperands;
-            Operators.BinaryOperator[] operators;
+            Expressions.Expression expr;
 
             // Keep getting user input until we get something valid.
             do
             {
                 String errorMsg;
-                isValid = Input.InputHandler.GetAndParseInput(out operators, out inputOperands, out errorMsg);
+                Input.IParser<Expressions.Expression> parser = new Expressions.ExpressionParser();
+                Input.InputHandler<Expressions.Expression> handler = new Input.InputHandler<Expressions.Expression>(parser);
+                isValid = handler.GetAndParseInput(out expr, out errorMsg);
                 if (!isValid)
                 {
                     Console.WriteLine(errorMsg);
@@ -29,7 +29,6 @@ namespace ConsoleApplication1
             // Calculate the result
             String resultError;
             double result;
-            Expressions.Expression expr = new Expressions.Expression(operators, inputOperands);
             bool success = expr.Evaluate(out result, out resultError);
 
             // If everything was good, show the result.
