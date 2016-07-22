@@ -19,8 +19,7 @@ namespace ConsoleApplication1
             do
             {
                 String errorMsg;
-                String userInput = GetUserInput();
-                isValid = ParseInput(userInput, out operators, out inputOperands, out errorMsg);
+                isValid = Input.InputHandler.GetAndParseInput(out operators, out inputOperands, out errorMsg);
                 if (!isValid)
                 {
                     Console.WriteLine(errorMsg);

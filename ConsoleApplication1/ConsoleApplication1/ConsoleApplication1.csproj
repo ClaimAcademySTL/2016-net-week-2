@@ -43,6 +43,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Input\InputHandler.cs" />
     <Compile Include="Input\InputPrompter.cs" />
     <Compile Include="Input\Parser.cs" />
     <Compile Include="Input\Tokenizer.cs" />

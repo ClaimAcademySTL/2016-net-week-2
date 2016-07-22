@@ -8,7 +8,12 @@ namespace ConsoleApplication1.Input
 {
     class Parser
     {
-        private String[] _tokens;
+        private readonly String[] _tokens;
+
+        public Parser(String[] tokens)
+        {
+            _tokens = tokens;
+        }
 
         /**
          * Parse input into an array of operators and an array of numeric operands.
@@ -16,15 +21,12 @@ namespace ConsoleApplication1.Input
          * same-indexed element of operators. Returns true if parsing was successful, 
          * false otherwise.
          */
-        public bool Parse(String[] tokens, out Operators.BinaryOperator[] operators, out double[] operands, out String errorMsg)
+        public bool Parse(out Operators.BinaryOperator[] operators, out double[] operands, out String errorMsg)
         {
             errorMsg = null;
             operands = null;
             operators = null;
 
-            _tokens = tokens;
-
-            
             bool isLengthValid = CheckTokenCount();
             if (!isLengthValid)
             {
