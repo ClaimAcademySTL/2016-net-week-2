@@ -66,12 +66,16 @@ namespace ConsoleApplication1.Expressions
             for (int operatorIndex = 0; operatorIndex < operators.Length; operatorIndex++)
             {
                 int tokenIndex = (2 * operatorIndex) + 1;
-                String errorMsg;
-                operators[operatorIndex] = Operators.BinaryOperatorFactory.Create(_tokens[tokenIndex], out errorMsg);
-                if (operators[operatorIndex] == null)
+                try
                 {
-                    // Couldn't convert to an operator. Stop everything!
-                    throw new BadTokenException(tokenIndex, errorMsg);
+                    operators[operatorIndex] = Operators.BinaryOperatorFactory.Create(_tokens[tokenIndex]);
+                }
+                catch (ArgumentException e)
+                {
+                    // Couldn't convert to an operator. Convert the exception to a
+                    // BadTokenException, which lets us indicate which token was
+                    // bad.
+                    throw new BadTokenException(tokenIndex, e.Message, e);
                     
                 }
             }

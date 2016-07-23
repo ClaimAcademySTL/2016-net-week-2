@@ -11,18 +11,26 @@ namespace ConsoleApplication1
         static void Main(string[] args)
         {
             bool isValid;
-            Expressions.Expression expr;
+            Expressions.Expression expr = null;
 
             // Keep getting user input until we get something valid.
             do
             {
-                String errorMsg;
                 Input.IParser<Expressions.Expression> parser = new Expressions.ExpressionParser();
-                Input.InputHandler<Expressions.Expression> handler = new Input.InputHandler<Expressions.Expression>(parser);
-                isValid = handler.GetAndParseInput(out expr, out errorMsg);
-                if (!isValid)
+                Input.InputHandler<Expressions.Expression> handler = 
+                    new Input.InputHandler<Expressions.Expression>(parser, "Please enter an expression using binary operators.\nExample expression: '75.3 + -20.7 - 35 * 6e-20'");
+
+                isValid = false;
+                try
                 {
-                    Console.WriteLine(errorMsg);
+                    expr = handler.GetAndParseInput();
+                    isValid = true;
+                }
+                catch (Exception e)
+                {
+                    // Print out what went wrong.
+                    Console.WriteLine(e.Message);
+                    // isValid remains false
                 }
             } while (!isValid);
 

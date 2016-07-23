@@ -44,7 +44,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Expressions\Expression.cs" />
-    <Compile Include="Expressions\BadTokenException.cs" />
+    <Compile Include="Input\BadTokenException.cs" />
     <Compile Include="Input\InputHandler.cs" />
     <Compile Include="Input\InputPrompter.cs" />
     <Compile Include="Expressions\ExpressionParser.cs" />

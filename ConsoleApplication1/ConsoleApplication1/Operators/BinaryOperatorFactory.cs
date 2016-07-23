@@ -10,13 +10,11 @@ namespace ConsoleApplication1.Operators
     {
         /**
          * Create and return a new operator whose symbol matches 
-         * the symbol parameter. Returns null if symbol parameter
-         * does not match any recognized operator.
+         * the symbol parameter. Throws ArgumentException if symbol 
+         * parameter does not match any recognized operator.
          */
-        public static BinaryOperator Create(String symbol, out String errorMsg)
+        public static BinaryOperator Create(String symbol)
         {
-            errorMsg = null;
-
             switch (symbol)
             {
                 case AdditionOperator.OperatorSymbol:
@@ -35,8 +33,7 @@ namespace ConsoleApplication1.Operators
                     return new ModulusOperator();
 
                 default:
-                    errorMsg = String.Format("Unrecognized operator: '{0}'", symbol);
-                    return null;
+                    throw new ArgumentException(String.Format("Unrecognized operator: '{0}'", symbol));
             }
         }
     }
