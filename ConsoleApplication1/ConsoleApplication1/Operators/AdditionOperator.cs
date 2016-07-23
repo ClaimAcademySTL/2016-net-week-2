@@ -17,6 +17,9 @@ namespace ConsoleApplication1.Operators
             return 1;
         }
 
-        
+        protected override string GetOverflowMessage(double left, double right)
+        {
+            return String.Format("Attempt to add {0} and {1}, but the result will overflow!", left, right);
+        }
     }
 }

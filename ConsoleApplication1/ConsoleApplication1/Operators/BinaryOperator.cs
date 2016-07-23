@@ -24,24 +24,15 @@ namespace ConsoleApplication1.Operators
 
         /**
          * Perform the operation, as long as it is valid and will not overflow.
-         * result is the result of the operation. Returns true on success, false
+         * result is the result of the operation. Throws ArgumentException
          * if the operation is not valid on the given parameters or would overflow.
          */
-        public bool PerformOperation(double left, double right, out double result, out String errorMsg)
+        public double PerformOperation(double left, double right)
         {
-            result = 0;
-            bool success;
-            if (IsOperationValid(left, right, out errorMsg))
-            {
-                success = true;
-                result = PerformOperationWithoutChecking(left, right);
-            }
-            else
-            {
-                success = false;
-            }
+            // Throws ArgumentException if not valid
+            TestOperation(left, right);
 
-            return success;
+            return PerformOperationWithoutChecking(left, right);
         }
 
         public override string ToString()
@@ -50,10 +41,9 @@ namespace ConsoleApplication1.Operators
         }
 
         /**
-         * Return true if the operation can be validly performed with the given
-         * parameters, false otherwise.
+         * Throw ArgumentException if this operation would not be valid with the given parameters.
          */
-        protected abstract bool IsOperationValid(double left, double right, out String errorMsg);
+        protected abstract void TestOperation(double left, double right);
 
         /**
          * Perform the operation, assuming any error/bounds checking has already

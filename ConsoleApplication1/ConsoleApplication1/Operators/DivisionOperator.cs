@@ -16,22 +16,43 @@ namespace ConsoleApplication1.Operators
          * a very small magnitude number by a large magnitude number, the result could
          * be 0).
          */
-        protected override bool IsOperationValid(double left, double right, out String errorMsg)
+        protected override void TestOperation(double left, double right)
         {
-            bool success;
             if (right == 0)
             {
-                success = false;
-                errorMsg = "Attempt to divide by zero!";
+                throw new ArgumentException("Attempt to divide by zero");
             }
-            else
+
+            bool willOverflow = false;
+            // Can't overflow if first operand is 0.
+            // Can only overflow if absolute value of first
+            // operand is greater than 1 and absolute value
+            // of second operand is less than 1.
+            // Can overflow past MaxValue if both signs
+            // are the same, or past MinValue if both
+            // operands have opposite sign.
+            if ((left < -1 || left > 1) && (right > -1 && right < 1))
             {
-                
-                success = true;
-                errorMsg = null;
+                double absA, absB;
+                int signA = GetSign(left, out absA);
+                int signB = GetSign(right, out absB);
+                if (signA == signB)
+                {
+                    willOverflow = (absA > absB * double.MaxValue);
+                }
+                else
+                {
+                    willOverflow = (absA > -absB * double.MinValue);
+                }
             }
-            return success;
+
+            if (willOverflow)
+            {
+                throw new ArgumentException(String.Format("Attempt to divide {0} by {1}, but the result will overflow!", left, right));
+            }
         }
+
+    
 
         protected override double PerformOperationWithoutChecking(double left, double right)
         {

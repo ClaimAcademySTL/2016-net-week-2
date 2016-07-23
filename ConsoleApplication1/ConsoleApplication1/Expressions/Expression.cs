@@ -67,7 +67,17 @@ namespace ConsoleApplication1.Expressions
             if (success)
             {
                 // Combine the results
-                success = _operators[operIndex].PerformOperation(leftResult, rightResult, out result, out errorMsg);
+                success = false;
+                try
+                {
+                    result = _operators[operIndex].PerformOperation(leftResult, rightResult);
+                    success = true;
+                }
+                catch (ArgumentException e)
+                {
+                    errorMsg = e.Message;
+                    // success remains false
+                }
             }
 
             return success;

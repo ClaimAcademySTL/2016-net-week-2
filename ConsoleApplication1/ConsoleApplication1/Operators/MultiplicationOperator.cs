@@ -15,7 +15,7 @@ namespace ConsoleApplication1.Operators
          * Precision could be lost without returning false (for example, when adding 
          * two numbers that each have a very small magnitude, the result could be 0).
          */
-        protected override bool IsOperationValid(double left, double right, out String errorMsg)
+        protected override void TestOperation(double left, double right)
         {
             bool willOverflow = false;
             // Can't overflow if absolute value of either 
@@ -42,14 +42,8 @@ namespace ConsoleApplication1.Operators
 
             if (willOverflow)
             {
-                errorMsg = "Multiplication will overflow!";
+                throw new ArgumentException(String.Format("Attempt to multiply {0} by {1}, but the result will overflow!", left, right));
             }
-            else
-            {
-                errorMsg = null;
-            }
-
-            return !willOverflow;
         }
 
         protected override double PerformOperationWithoutChecking(double left, double right)

@@ -29,5 +29,10 @@ namespace ConsoleApplication1.Operators
                     return 0;
             }
         }
+
+        protected override string GetOverflowMessage(double left, double right)
+        {
+            return String.Format("Attempt to subtract {0} from {1}, but the result will overflow!", right, left);
+        }
     }
 }

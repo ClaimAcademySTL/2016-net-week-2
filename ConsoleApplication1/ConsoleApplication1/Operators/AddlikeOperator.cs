@@ -31,7 +31,7 @@ namespace ConsoleApplication1.Operators
          * Precision could be lost without returning false (for example, when adding 
          * two numbers which greatly differ in magnitude).
          */
-        protected override bool IsOperationValid(double left, double right, out String errorMsg)
+        protected override void TestOperation(double left, double right)
         {
             double effectiveLeft = left * GetSignMultiplier(OperandSides.LEFT);
             double effectiveRight = right * GetSignMultiplier(OperandSides.RIGHT);
@@ -42,24 +42,27 @@ namespace ConsoleApplication1.Operators
             if (effectiveLeft > 0 && effectiveRight > 0)
             {
                 double roomForOverflow = double.MaxValue - effectiveLeft; // non-negative
+                // effectiveRight and roomForOverflow are both non-negative. Overflow if
+                // effectiveRight is more positive than roomForOverflow.
                 willOverflow = (effectiveRight > roomForOverflow);
             }
             else if (effectiveLeft < 0 && effectiveRight < 0)
             {
                 double roomForOverflow = double.MinValue - effectiveLeft; // non-positive
+                // effectiveRight and roomForOverflow are both non-positive. Overflow if
+                // effectiveRight is more negative than roomForOverflow.
                 willOverflow = (effectiveRight < roomForOverflow);
             }
 
             if (willOverflow)
             {
-                errorMsg = "Addition or subtraction overflow!";
+                throw new ArgumentException(GetOverflowMessage(left, right));
             }
-            else
-            {
-                errorMsg = null;
-            }
+        }
 
-            return !willOverflow; ;
+        protected virtual String GetOverflowMessage(double left, double right)
+        {
+            return "Arithmetic overflow!";
         }
 
         protected override double PerformOperationWithoutChecking(double left, double right)

@@ -14,20 +14,12 @@ namespace ConsoleApplication1.Operators
         /**
          * Operation is only considered invalid if right parameter is zero.
          */
-        protected override bool IsOperationValid(double left, double right, out String errorMsg)
+        protected override void TestOperation(double left, double right)
         {
-            bool success;
             if (right == 0)
             {
-                errorMsg = "Attempt to get remainder of division by zero!";
-                success = false;
+                throw new ArgumentException("Attempt to get remainder of division by zero!");
             }
-            else
-            {
-                errorMsg = null;
-                success = true;
-            }
-            return success;
         }
 
         protected override double PerformOperationWithoutChecking(double left, double right)
