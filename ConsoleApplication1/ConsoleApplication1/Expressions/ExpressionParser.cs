@@ -20,16 +20,27 @@ namespace ConsoleApplication1.Expressions
         {
             _tokens = tokens;
 
-            // Throws ArgumentException if length is invalid
-            CheckTokenCount();
+            try
+            {
+                // Throws ArgumentException if length is invalid
+                CheckTokenCount();
 
-            // Throws BadTokenException if an invalid operator is found
-            Operators.BinaryOperator[] operators = ConvertTokensToOperators();
+                // Throws BadTokenException if an invalid operator is found
+                Operators.BinaryOperator[] operators = ConvertTokensToOperators();
+
+                // Throws BadTokenException if an invalid operand is found
+                double[] operands = ConvertTokensToOperands();
+
+                return new Expression(operators, operands);
+            }
+            catch (BadTokenException e)
+            {
+                // Make the error message more helpful and rethrow
+                int index = e.IndexOfBadToken;
+                String msg = FormatErrorMessage(e.Message, index);
+                throw new BadTokenException(index, msg, e);
+            }
             
-            // Throws BadTokenException if an invalid operand is found
-            double[] operands = ConvertTokensToOperands();
-            
-            return new Expression(operators, operands);
         }
 
         /**
@@ -108,6 +119,38 @@ namespace ConsoleApplication1.Expressions
             }
 
             return operands;
+        }
+
+        private String FormatErrorMessage(String msg, int errorIndex)
+        {
+            String reconstructedInput = "";
+            String positionIndicator = "";
+            for (int i = 0; i < _tokens.Length; i++)
+            {
+                if (i == errorIndex)
+                {
+                    // Center the indicator in the current token
+                    int padding = reconstructedInput.Length + (_tokens[i].Length / 2);
+                    padding += (i == 0) ? 0 : 1;    // Account for the space that will be added before the token
+                    positionIndicator = "^".PadLeft(padding + 1);
+                }
+
+                // Join the tokens together, separated by spaces.
+                // We can't just use String.Join() because we wouldn't know where
+                // to put the position indicator.
+                if (i == 0)
+                {
+                    reconstructedInput = _tokens[i];
+                }
+                else
+                {
+                    reconstructedInput = String.Format("{0} {1}", reconstructedInput, _tokens[i]);
+                }
+            }
+
+            // Combine the original message, the reconstructed input string, and the
+            // position indicator, separated by newlines.
+            return String.Format("{0}\n{1}\n{2}", msg, reconstructedInput, positionIndicator);
         }
     }
 }
