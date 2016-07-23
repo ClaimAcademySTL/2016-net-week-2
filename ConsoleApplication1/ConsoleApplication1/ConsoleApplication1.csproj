@@ -59,7 +59,7 @@
     <Compile Include="Operators\MultiplicationOperator.cs" />
     <Compile Include="Operators\MultiplylikeOperator.cs" />
     <Compile Include="Operators\SubtractionOperator.cs" />
-    <Compile Include="Program.cs" />
+    <Compile Include="Calculator.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
