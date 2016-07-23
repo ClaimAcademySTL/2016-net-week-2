@@ -22,35 +22,44 @@ namespace ConsoleApplication1.Expressions
          */
         public Expression(Operators.BinaryOperator[] operators, double[] operands)
         {
+            if (operators.Length == 0)
+            {
+                throw new ArgumentException("No operators in expression!");
+            }
+            if (operands.Length - operators.Length != 1)
+            {
+                throw new ArgumentException(String.Format("Operator and operand count mismatch. For {0} operators, expected {1} operands, but found {2} operands",
+                    operators.Length, operators.Length + 1, operands.Length));
+            }
+
             _operators = operators;
             _operands = operands;
-            // TODO: Check parameters and throw exception
         }
 
         /**
          * Evaluate the expression using the correct order of operations.
+         * Throws ArgumentException if any part of the expression cannot be
+         * evaluated.
          */
-        public virtual bool Evaluate(out double result, out String errorMsg)
+        public virtual double Evaluate()
         {
-            return RecursiveEvaluate(0, _operators.Length, out result, out errorMsg);
+            return RecursiveEvaluate(0, _operators.Length);
         }
 
         /**
          * Recursively do one or more operations, using the correct order of operations.
          * Takes a starting and stopping index to determine what portion of the tokens/operands
-         * to process. startIndex is included, stopIndex is excluded.
+         * to process. startIndex is included, stopIndex is excluded. Throws ArgumentException
+         * if any operation within the expression cannot be evaluated.
          */
-        private bool RecursiveEvaluate(int startIndex, int stopIndex, out double result, out String errorMsg)
+        private double RecursiveEvaluate(int startIndex, int stopIndex)
         {
-            errorMsg = null;
-            result = 0;
             if (startIndex == stopIndex)
             {
                 // Base case, a single value
                 // Result is the value of the operand to the left of the operator
                 // at startIndex. This operand has the same index as the operator.
-                result = _operands[startIndex];
-                return true;
+                return _operands[startIndex];
             }
 
             // Find the rightmost, lowest precedence operator. This allows
@@ -58,29 +67,26 @@ namespace ConsoleApplication1.Expressions
             // and rightResult) before we call DoOperation on this one.
             int operIndex = FindLastOperatorWithPrecedence(startIndex, stopIndex);
 
-            // Get the results for each side of the operator
-            double leftResult;
-            double rightResult = 0;
-            bool success = (RecursiveEvaluate(startIndex, operIndex, out leftResult, out errorMsg) &&
-                RecursiveEvaluate(operIndex + 1, stopIndex, out rightResult, out errorMsg));
+            // Get the results for each side of the operator. Could generate ArgumentException
+            // at each of these two lines. If so, just allow it to bubble up.
+            double leftResult = RecursiveEvaluate(startIndex, operIndex);
+            double rightResult = RecursiveEvaluate(operIndex + 1, stopIndex);
 
-            if (success)
+            // Combine the results. Could generate ArgumentException
+            double result = 0;
+            try
             {
-                // Combine the results
-                success = false;
-                try
-                {
-                    result = _operators[operIndex].PerformOperation(leftResult, rightResult);
-                    success = true;
-                }
-                catch (ArgumentException e)
-                {
-                    errorMsg = e.Message;
-                    // success remains false
-                }
+                result = _operators[operIndex].PerformOperation(leftResult, rightResult);
             }
-
-            return success;
+            catch (ArgumentException e)
+            {
+                // TODO: Create an exception class that lets us show where
+                // in the expression the problem occurred.
+                // For now, just rethrow the original exception.
+                throw e;
+            }
+            
+            return result;
         }
 
         /**

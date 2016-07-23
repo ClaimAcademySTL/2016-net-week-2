@@ -27,20 +27,18 @@ namespace ConsoleApplication1
             } while (!isValid);
 
             // Calculate the result
-            String resultError;
             double result;
-            bool success = expr.Evaluate(out result, out resultError);
-
-            // If everything was good, show the result.
-            if (success)
+            try
             {
+                result = expr.Evaluate();
                 ShowResult(expr, result);
             }
-            else
+            catch (Exception e)
             {
                 // Something went wrong. Let the user know.
-                Console.WriteLine("Cannot calculate result.\n" + resultError);
+                Console.WriteLine("Cannot calculate result.\n{0}", e.Message);
             }
+            
 
             // Keep the program open so the user can read the result.
             Console.WriteLine("\n\nPress any key to continue...");
