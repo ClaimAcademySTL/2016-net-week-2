@@ -7,7 +7,7 @@ using ConsoleApplication1.Input;
 
 namespace ConsoleApplication1.Expressions
 {
-    class ExpressionParser : IParser<Expression>
+    class ExpressionParser : IParser
     {
         private String[] _tokens;
 
@@ -16,7 +16,7 @@ namespace ConsoleApplication1.Expressions
          * tokens cannot contain a valid expression due to its length. Throws
          * BadTokenException if not all operators and operands are valid.
          */
-        public Expression Parse(String[] tokens)
+        public IEvaluatable Parse(String[] tokens)
         {
             _tokens = tokens;
 

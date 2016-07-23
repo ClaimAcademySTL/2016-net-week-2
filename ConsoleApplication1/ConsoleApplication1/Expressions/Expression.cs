@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ConsoleApplication1.Expressions
 {
-    class Expression
+    class Expression : IEvaluatable
     {
         private readonly Operators.BinaryOperator[] _operators;
         private readonly double[] _operands;

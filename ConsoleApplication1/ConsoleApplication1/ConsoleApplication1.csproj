@@ -43,6 +43,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="IEvaluatable.cs" />
     <Compile Include="Expressions\Expression.cs" />
     <Compile Include="Input\BadTokenException.cs" />
     <Compile Include="Input\InputHandler.cs" />
@@ -60,6 +61,7 @@
     <Compile Include="Operators\MultiplylikeOperator.cs" />
     <Compile Include="Operators\SubtractionOperator.cs" />
     <Compile Include="Calculator.cs" />
+    <Compile Include="ParserFactory.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

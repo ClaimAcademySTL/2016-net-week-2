@@ -8,7 +8,7 @@ namespace ConsoleApplication1
 {
     class Calculator
     {
-        private Expressions.Expression _expr;
+        private IEvaluatable _expr;
         private double _result = 0;
 
         static void Main(string[] args)
@@ -43,9 +43,9 @@ namespace ConsoleApplication1
             // Keep getting user input until we get something valid.
             do
             {
-                Input.IParser<Expressions.Expression> parser = new Expressions.ExpressionParser();
-                Input.InputHandler<Expressions.Expression> handler =
-                    new Input.InputHandler<Expressions.Expression>(parser, "Please enter an expression using binary operators.\nExample expression: '75.3 + -20.7 - 35 * 6e-20'");
+                Input.IParser parser = new Expressions.ExpressionParser();
+                Input.InputHandler handler =
+                    new Input.InputHandler(parser, "Please enter an expression using binary operators.\nExample expression: '75.3 + -20.7 - 35 * 6e-20'");
 
                 isValid = false;
                 try
@@ -66,7 +66,7 @@ namespace ConsoleApplication1
         }
 
         /**
-         * Display the result to the user in a helpful way. Can us
+         * Display the result to the user in a helpful way.
          */
         private String FormatResult()
         {

@@ -6,12 +6,12 @@ using System.Threading.Tasks;
 
 namespace ConsoleApplication1.Input
 {
-    interface IParser<T>
+    interface IParser
     {
         /**
          * Parse an array of input tokens into a result of type T. Returns
          * true on successful parsing, false on failure.
          */
-        T Parse(String[] tokens);
+        IEvaluatable Parse(String[] tokens);
     }
 }

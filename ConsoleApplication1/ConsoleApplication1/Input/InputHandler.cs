@@ -6,16 +6,16 @@ using System.Threading.Tasks;
 
 namespace ConsoleApplication1.Input
 {
-    class InputHandler<T>
+    class InputHandler
     {
-        private readonly IParser<T> _parser;
+        private readonly IParser _parser;
         private readonly InputPrompter _prompter;
         private readonly bool _addBasicPrompt;
 
         /**
          * The parser specified here will be used by GetAndParseInput.
          */
-        public InputHandler(IParser<T> parser, String inputPrompt, bool addBasicPrompt = true)
+        public InputHandler(IParser parser, String inputPrompt, bool addBasicPrompt = true)
         {
             _parser = parser;
             _prompter = new InputPrompter(inputPrompt);
@@ -27,7 +27,7 @@ namespace ConsoleApplication1.Input
          * during construction to parse the input. Any exceptions generated
          * by the parser are passed on to the caller.
          */
-        public T GetAndParseInput()
+        public IEvaluatable GetAndParseInput()
         {
             //InputPrompter prompter = new InputPrompter("Please enter an expression using binary operators.\nExample expression: '75.3 + -20.7 - 35 * 6e-20'");
             String inputString = _prompter.GetInput(_addBasicPrompt);
