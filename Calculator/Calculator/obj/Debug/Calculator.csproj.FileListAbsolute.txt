@@ -4,3 +4,6 @@ C:\Users\Owner\Documents\2016-net-week-2\Calculator\Calculator\bin\Debug\Calcula
 C:\Users\Owner\Documents\2016-net-week-2\Calculator\Calculator\bin\Debug\Calculator.pdb
 C:\Users\Owner\Documents\2016-net-week-2\Calculator\Calculator\obj\Debug\Calculator.exe
 C:\Users\Owner\Documents\2016-net-week-2\Calculator\Calculator\obj\Debug\Calculator.pdb
+D:\Users\Tim\Documents\Projects\claim\2016-net-week-2\Calculator\Calculator\bin\Debug\Calculator.exe.config
+D:\Users\Tim\Documents\Projects\claim\2016-net-week-2\Calculator\Calculator\obj\Debug\Calculator.exe
+D:\Users\Tim\Documents\Projects\claim\2016-net-week-2\Calculator\Calculator\obj\Debug\Calculator.pdb

@@ -10,24 +10,9 @@ namespace Calculator
     {
         static void Main(string[] args)
         {
-            /*
-            int a = AskforInt();
-
-            int b = AskforInt();
-
-           string operation = AskForOperator();
-
-            if (operation == "+")
-            Console.WriteLine("The sum of {0} and {1} is {2}",a,b, AddAnswer(a, b));
-
-            else 
-            Console.WriteLine("The difference between {0} and {1} is {2}",a,b, SubtractAnswer(a,b));
-
-            Console.ReadLine();
-            
-
-
-
+            int a, b;
+            string operation;
+            ProcessAddSubtract(out a, out b, out operation);
 
             int a = AskforInt();
 
@@ -38,7 +23,7 @@ namespace Calculator
             string operation = AskForOperator2();
 
             if (operation == "+")
-            { Console.WriteLine("The sum of {0} and {1} is {2}", a, b, AddAnswer(a, b)); }
+            { Console.WriteLine("The sum of {0} and {1} is {2}", a, b, Calculator.AddAnswer(a, b)); }
 
             else if (operation == "-")
             { Console.WriteLine("The difference between {0} and {1} is {2}", a, b, SubtractAnswer(a, b)); }
@@ -47,57 +32,54 @@ namespace Calculator
             { Console.WriteLine("The product of {0} and {1} is {2}", a, b, MultiplyAnswer(a, b)); }
 
             Console.ReadLine();
-            
 
 
-            
-             float a = AskForFloat();
 
 
-             float b = AskForFloat();
-            
-             string operation = AskForOperator2();
-
-             if (operation == "+")
-             { Console.WriteLine("The sum of {0} and {1} is {2}", a, b, AddAnswerF(a, b)); }
-
-             else if (operation == "-")
-             { Console.WriteLine("The difference between {0} and {1} is {2}", a, b, SubtractAnswerF(a, b)); }
-
-             else if (operation == "*")
-             { Console.WriteLine("The product of {0} and {1} is {2}", a, b, MultiplyAnswerF(a, b)); }
-
-             Console.ReadLine();
-             
+            float a = AskForFloat();
 
 
-            
-             float a = AskForFloat();
+            float b = AskForFloat();
+
+            string operation = AskForOperator2();
+
+            if (operation == "+")
+            { Console.WriteLine("The sum of {0} and {1} is {2}", a, b, AddAnswerF(a, b)); }
+
+            else if (operation == "-")
+            { Console.WriteLine("The difference between {0} and {1} is {2}", a, b, SubtractAnswerF(a, b)); }
+
+            else if (operation == "*")
+            { Console.WriteLine("The product of {0} and {1} is {2}", a, b, MultiplyAnswerF(a, b)); }
+
+            Console.ReadLine();
 
 
-             float b = AskForFloat();
 
 
-             string operation = AskForOperator3();
+            float a = AskForFloat();
 
-             if (operation == "+")
-             { Console.WriteLine("The sum of {0} and {1} is {2}", a, b, AddAnswerF(a, b)); }
 
-             else if (operation == "-")
-             { Console.WriteLine("The difference between {0} and {1} is {2}", a, b, SubtractAnswerF(a, b)); }
+            float b = AskForFloat();
 
-             else if (operation == "*")
-             { Console.WriteLine("The product of {0} and {1} is {2}", a, b, MultiplyAnswerF(a, b)); }
 
-             else if (operation == "/")
-             { Console.WriteLine("The quotient of {0} and {1} is {2}", a, b, DivideAnswerF(a,b)); }
+            string operation = AskForOperator3();
 
-             Console.ReadLine();
-            */
-            
-            
+            if (operation == "+")
+            { Console.WriteLine("The sum of {0} and {1} is {2}", a, b, Calculator.AddAnswer(a, b)); }
 
-            double total_amount_of_mortgage, monthly_interest_rate, number_of_months_of_the_loan, yearly_interest_rate;
+            else if (operation == "-")
+            { Console.WriteLine("The difference between {0} and {1} is {2}", a, b, Calculator.SubtractAnswer(a, b)); }
+
+            else if (operation == "*")
+            { Console.WriteLine("The product of {0} and {1} is {2}", a, b, Calculator.MultiplyAnswer(a, b)); }
+
+            else if (operation == "/")
+            { Console.WriteLine("The quotient of {0} and {1} is {2}", a, b, Calculator.DivideAnswer(a, b)); }
+            Console.ReadLine();
+
+
+            double total_amount_of_mortgage, number_of_months_of_the_loan, yearly_interest_rate;
 
 
             total_amount_of_mortgage = AskforMortgageAmount();
@@ -108,22 +90,42 @@ namespace Calculator
 
             number_of_months_of_the_loan = AskforNumOfMonths();
 
-            monthly_interest_rate = yearly_interest_rate / 100 / 12;
-             double mess = 1 - Math.Pow((1 + monthly_interest_rate), -number_of_months_of_the_loan);
-             Console.WriteLine("Monthy payment: {0}", (monthly_interest_rate / mess * total_amount_of_mortgage));
+            Console.WriteLine("Monthy payment: {0}", (MortgageCalculation(total_amount_of_mortgage, number_of_months_of_the_loan, yearly_interest_rate)));
 
-             Console.ReadLine();
-             
-    
+            Console.ReadLine();
 
-     
+
+
+
         }
-        
-            public static int AskforInt()
+
+        private static void ProcessAddSubtract(out int a, out int b, out string operation)
+        {
+            a = AskforInt();
+            b = AskforInt();
+            operation = AskForOperator();
+            if (operation == "+")
+                Console.WriteLine("The sum of {0} and {1} is {2}", a, b, AddAnswer(a, b));
+
+            else
+                Console.WriteLine("The difference between {0} and {1} is {2}", a, b, SubtractAnswer(a, b));
+
+            Console.ReadLine();
+        }
+
+        private static double MortgageCalculation(double total_amount_of_mortgage, double number_of_months_of_the_loan, double yearly_interest_rate)
+        {
+            double monthly_interest_rate = yearly_interest_rate / 100 / 12;
+            double mess = 1 - Math.Pow((1 + monthly_interest_rate), -number_of_months_of_the_loan);
+            return monthly_interest_rate / mess * total_amount_of_mortgage;
+        }
+
+        public static int AskforInt()
         {
             Console.WriteLine("Give me an integer, please");
             return Convert.ToInt32(Console.ReadLine());
         }
+
         public static string AskForOperator()
         {
             while (true)
@@ -141,18 +143,7 @@ namespace Calculator
                 }
             }
         }
-        public static int AddAnswer(int left, int right)
-        {
-            return left + right;
-        }
-        public static int SubtractAnswer(int left, int right)
-        {
-            return left - right;
-        }
-        public static int MultiplyAnswer(int left, int right)
-        {
-            return left * right;
-        }
+        
 
         public static float AskForFloat()
         {
@@ -195,22 +186,7 @@ namespace Calculator
                 }
             }
         }
-        public static float AddAnswerF(float left, float right)
-        {
-            return left + right;
-        }
-        public static float SubtractAnswerF(float left, float right)
-        {
-            return left - right;
-        }
-        public static float MultiplyAnswerF(float left, float right)
-        {
-            return left * right;
-        }
-        public static float DivideAnswerF(float left, float right)
-        {
-            return left / right;
-        }
+        
         public static int AskforMortgageAmount()
         {
             Console.WriteLine("What is the total amount of the mortgage?");
@@ -226,7 +202,44 @@ namespace Calculator
             Console.WriteLine("What's the total number of months of the loan?");
             return Convert.ToInt32(Console.ReadLine());
         }
-        
+
     }
-    
+
+    class Calculator
+    {
+        public static float AddAnswer(float left, float right)
+        {
+            return left + right;
         }
+        public static float SubtractAnswer(float left, float right)
+        {
+            return left - right;
+        }
+        public static float MultiplyAnswer(float left, float right)
+        {
+            return left * right;
+        }
+        public static float DivideAnswer(float left, float right)
+        {
+            if (right == 0)
+            {
+
+            }
+            return left / right;
+        }
+
+        public static int AddAnswer(int left, int right)
+        {
+            return left + right;
+        }
+        public static int SubtractAnswer(int left, int right)
+        {
+            return left - right;
+        }
+        public static int MultiplyAnswer(int left, int right)
+        {
+            return left * right;
+        }
+    }
+
+}
